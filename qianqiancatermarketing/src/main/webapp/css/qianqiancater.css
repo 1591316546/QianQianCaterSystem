@@ -1,0 +1,42 @@
+/* 搜索框 */
+.search-bar {
+	padding-top: 40px;
+	/* border: 2px solid #fda72c; */
+}
+
+.search-bar>input {
+	border-radius: 0;
+}
+
+.search-bar button {
+	border-radius: 0;
+	background-color: #fda72c;
+}
+
+/* 头部登录信息区 */
+#login_info {
+	padding-top: 50px;
+	padding-bottom: 30px;
+}
+
+#login_info>a:nth-child(1) {
+	color: #fda72c;
+	margin-right: 50px;
+}
+
+/* 横线 分割线 */
+.specialty {
+	border-bottom: 2px solid #fda72c;
+	margin-bottom: 10px;
+}
+
+footer {
+	margin-top: 50px;
+}
+
+
+/* 验证码 */
+.check_code{
+	margin-top: 10px;
+	display: inline-block;
+}
