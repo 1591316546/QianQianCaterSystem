@@ -13,8 +13,8 @@ import java.util.Properties;
  * @author QIANG
  */
 public class MailUtils {
-    private final static String from = "qiangyanjun@yeah.net";
-    private final static String password = "qianqiancater1";
+    private final static String from = "";
+    private final static String password = "";
     /* 默认配置 */
     private static String host = "smtp.yeah.net";
 
