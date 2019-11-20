@@ -30,33 +30,4 @@ public class JDBCUtilsTest {
         JDBCUtils.close(null,connection);
 
     }
-
-    @Test
-    public void testAddInsert(){
-        Connection conn = null;
-        PreparedStatement prestat = null;
-        try {
-            conn = JDBCUtils.getConnection();
-            User user = new User();
-            user.setUsername("qinag");
-            user.setPassword("123456");
-            user.setNickname("小强");
-            user.setBrith(new Date());
-            user.setEmail("qiang@sss.ss");
-
-            String sql ="insert into tab_user(username,password,nickname,email,brith,registration_time) values(?,?,?,?,?,?)";
-            prestat = conn.prepareStatement(sql);
-            prestat.setString(1,user.getUsername());
-            prestat.setString(2,user.getPassword());
-            prestat.setString(3,user.getNickname());
-            prestat.setString(4,user.getEmail());
-            prestat.setDate(5, user.getBrithForSql());
-            prestat.setLong(6,user.getRegistrationTime());
-            prestat.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            JDBCUtils.close(prestat,conn);
-        }
-    }
 }

@@ -6,6 +6,7 @@ import javax.mail.*;
 import javax.mail.internet.*;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
 
@@ -13,10 +14,21 @@ import java.util.Properties;
  * @author QIANG
  */
 public class MailUtils {
-    private final static String from = "qiangyanjun@yeah.net";
-    private final static String password = "qianqiancater1";
+    private static String from = "";
+    private static String password = "";
     /* 默认配置 */
     private static String host = "smtp.yeah.net";
+
+    static {
+        Properties properties = new Properties();
+        try {
+            properties.load(MailUtils.class.getClassLoader().getResourceAsStream("email.properties"));
+            from = properties.getProperty("email");
+            password = properties.getProperty("password");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 发送邮件

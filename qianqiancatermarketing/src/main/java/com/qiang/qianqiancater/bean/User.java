@@ -9,24 +9,23 @@ import java.util.Date;
 public class User {
     private Integer userId;
     private String username;
-    private String password;
+    private String pswd;
     /*昵称*/
     private String nickname;
     /*头像*/
     private Blob headPic;
     private String email;
-    private Date brith;
     /*性别*/
     private String gender;
     private Long registrationTime;
     /*用户状态*/
-    private String status;
+    private String activeStatus;
     /*激活需要的激活码*/
-    private String activationCode;
+    private String activeCode;
 
     public User() {
         this.registrationTime = new Date().getTime();
-        this.status = "D";
+        this.activeStatus = "D";
     }
 
     public Integer getUserId() {
@@ -45,12 +44,12 @@ public class User {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPswd() {
+        return pswd;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPswd(String pswd) {
+        this.pswd = pswd;
     }
 
     public String getNickname() {
@@ -77,30 +76,6 @@ public class User {
         this.email = email;
     }
 
-    public Date getBrith() {
-        return brith;
-    }
-
-    /**
-     * 数据库存储生日专用
-     * @return
-     */
-    public java.sql.Date getBrithForSql() {
-        return new java.sql.Date(brith.getTime());
-    }
-
-    public void setBrith(Date brith) {
-        this.brith = brith;
-    }
-
-    /**
-     * sql Date转为util.Date
-     * @param brith
-     */
-    public void setBrith(java.sql.Date brith) {
-        this.brith = new Date(brith.getTime());
-    }
-
     public String getGender() {
         return gender;
     }
@@ -117,20 +92,22 @@ public class User {
         this.registrationTime = registrationTime;
     }
 
-    public String getStatus() {
-        return status;
+
+
+    public String getActiveStatus() {
+        return activeStatus;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setActiveStatus(String activeStatus) {
+        this.activeStatus = activeStatus;
     }
 
-    public String getActivationCode() {
-        return activationCode;
+    public String getActiveCode() {
+        return activeCode;
     }
 
-    public void setActivationCode(String activationCode) {
-        this.activationCode = activationCode;
+    public void setActiveCode(String activeCode) {
+        this.activeCode = activeCode;
     }
 
     @Override
@@ -138,15 +115,14 @@ public class User {
         return "User{" +
                 "userId=" + userId +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
+                ", pswd='" + pswd + '\'' +
                 ", nickname='" + nickname + '\'' +
                 ", headPic=" + headPic +
                 ", email='" + email + '\'' +
-                ", brith=" + brith +
                 ", gender='" + gender + '\'' +
                 ", registrationTime=" + registrationTime +
-                ", status='" + status + '\'' +
-                ", activationCode='" + activationCode + '\'' +
+                ", activeStatus='" + activeStatus + '\'' +
+                ", activeCode='" + activeCode + '\'' +
                 '}';
     }
 }

@@ -1,3 +1,4 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <footer class="container-fluid">
 	<div class="row footer-bar-pic"><img src="img/footer_pic1.png" class="img-responsive"></div>
 	<div class="row">

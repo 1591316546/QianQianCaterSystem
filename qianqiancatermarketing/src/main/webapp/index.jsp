@@ -1,3 +1,4 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="zh-CN">
 	<head>
@@ -16,10 +17,9 @@
 		<link rel="stylesheet" type="text/css" href="css/qianqiancater.css" />
 		<script type="text/javascript">
 			$(function() {
-				/* 异步加载页头页尾 */
-				$("header").load("header.html");
-				$("footer").load("footer.html");
-
+				//插入页顶广告条
+				// $("<img>").prop("src","img/header_ad_pic.gif").addClass("img-responsive").appendTo($("#header_ad_pic"));
+				// $("#header_ad_pic").slideDown(slow,linear);
 				/* 轮播图时间切换间隔 */
 				$('.carousel').carousel({
 					interval: 2000
@@ -37,8 +37,13 @@
     <![endif]-->
 	</head>
 	<body>
-		<!-- 头部 异步加载 -->
-		<header></header>
+		<!-- 广告 -->
+		<!-- 广告条 -->
+		<div id="header_ad_pic" class="row">
+			<img src="img/header_ad_pic.gif" class="img-responsive">
+		</div>
+		<!-- 头部 加载 -->
+		<jsp:include page="header.jsp"></jsp:include>
 
 		<!-- 轮播图广告 -->
 		<div class="container-fluid">
@@ -194,6 +199,6 @@
 		</div>
 
 		<!-- 页脚 -->
-		<footer></footer>
+		<jsp:include page="footer.jsp"></jsp:include>
 	</body>
 </html>

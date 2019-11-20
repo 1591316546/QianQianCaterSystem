@@ -1,2 +1,5 @@
 # Project exclude paths
 /qianqiancatermarketing/target/
+.idea
+*.iml
+email.properties
