@@ -14,7 +14,7 @@
 				</span>
             </div><!-- /input-group -->
         </div>
-        <div class="col-md-3 col-md-offset-1">
+        <div class="col-md-4">
             <div id="login_info">
                 <a href="login.jsp">立即登录</a>
                 <a href="register.jsp">注册</a>
@@ -44,13 +44,13 @@
                     <ul class="nav navbar-nav">
                         <li class="active"><a href="index.jsp">首页</a></li>
                         <li><a href="#">特色菜品</a></li>
-                        <li><a href="#">中餐</a></li>
-                        <li><a href="#">西餐</a></li>
-                        <li><a href="#">饮品</a></li>
-                        <li><a href="#">粤菜</a></li>
-                        <li><a href="#">湘菜</a></li>
-                        <li><a href="#">订座</a></li>
-                        <li><a href="#">外卖</a></li>
+                        <li><a href="#">精品炒菜</a></li>
+                        <li><a href="#">劲道面条</a></li>
+                        <li><a href="#">美味汤羹</a></li>
+                        <li><a href="#">米饭盖饭</a></li>
+                        <li><a href="#">饮品酒水</a></li>
+                        <li><a href="#">宴席预定</a></li>
+                        <li><a href="#">外卖送餐</a></li>
                         <li><a href="#">联系我们</a></li>
                     </ul>
                 </div><!-- /.navbar-collapse -->
@@ -62,11 +62,13 @@
 	//显示登录信息
     $.get("user/getLoginInfo", function (data) {
 		if (data.code == 100) {
-			$("#login_info").empty();
-			$a_nickname = $("<a>").html(data.extend.nickname).prop("href", "personal_data.jsp");
-			$a_quit = $("<a>").html("&nbsp;&nbsp;退出登录").prop("href","user/logout");
-			$span = $("<span>").html("欢迎回来，").append($a_nickname).append($a_quit);
-			$span.appendTo($("#login_info"));
+            $("#login_info").empty();
+            $span = $("<span>").html("欢迎回来，");
+            $a_nickname = $("<a>").html(data.extend.nickname).prop("href", "personal_data.jsp");
+            $a_quit = $("<a>").html("退出登录").prop("href","user/logout");
+            $a_shoppingcart = $("<a>").html("我的购物车").prop("href","shoppingcart.jsp");
+            $a_orderform = $("<a>").html("我的订单").prop("href","orderform.jsp");
+			$("#login_info").append($span).append($a_nickname).append($a_quit).append($a_shoppingcart).append($a_orderform);
 		}
     });
 

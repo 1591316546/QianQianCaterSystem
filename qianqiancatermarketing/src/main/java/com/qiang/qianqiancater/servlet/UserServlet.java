@@ -70,10 +70,9 @@ public class UserServlet extends BaseServlet {
      *
      * @param request
      * @param response
-     * @throws ServletException
      * @throws IOException
      */
-    public void checkUsernameUnique(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void checkUsernameUnique(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String username = request.getParameter("username");
         boolean result = userService.checkUsernameUnique(username);
 //        Msg msg = new Msg();
@@ -144,10 +143,9 @@ public class UserServlet extends BaseServlet {
      * 获取登录信息
      * @param request
      * @param response
-     * @throws ServletException
      * @throws IOException
      */
-    public void getLoginInfo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void getLoginInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String username = (String) request.getSession().getAttribute("username");
         if (username == null){
             return;
