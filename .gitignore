@@ -1,5 +1,5 @@
 # Project exclude paths
-/qianqiancatermarketing/target/
+*/target/
 .idea
 *.iml
 email.properties
