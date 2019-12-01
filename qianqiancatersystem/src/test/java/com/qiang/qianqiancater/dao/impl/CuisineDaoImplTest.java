@@ -27,5 +27,15 @@ public class CuisineDaoImplTest {
 
     }
 
+    @Test
+    public void testgetCuiSineByName(){
+        try {
+            List<Cuisine> cuiSines = cuisineDao.getCuiSineByName("鱼", 5, 2);
+            System.out.println(cuiSines);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

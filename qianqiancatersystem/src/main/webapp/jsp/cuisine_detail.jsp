@@ -8,6 +8,8 @@
     <title>菜品详情页——千乾餐饮</title>
     <script type="text/javascript">
         $(function () {
+            //取消导航条首页标签高亮
+            $("#header-navbar>ul>li").removeClass("active");
             //获取参数
             var cid = getQueryVariable("cid");
             //获取对应的菜的详情
@@ -21,6 +23,15 @@
                         $("#desc").text(cuisine.description);
                         $("#price").text("￥ "+cuisine.price);
                     }
+                }
+            });
+
+            //获取菜的图片
+            $.ajax({
+                url:"${pageContext.request.contextPath}/cuisine/getCuisineBigImg",
+                data:{"cid":cid},
+                success:function (data) {
+                    $("#cuisine-image").prop("src","${pageContext.request.contextPath}/"+data.extend.imgPath);
                 }
             });
 
@@ -57,27 +68,30 @@
 
 <div class="container">
     <div class="row col-md-offset-5">
-        <h2>商品详情</h2>
+        <h2>菜品详情</h2>
     </div>
     <div class="row">
-        <div class="col-md-6"><img src="img/cai/cai_big_pic.png" class="img-responsive" alt="菜的图片"/></div>
+        <div class="col-md-6"><img id="cuisine-image" class="img-responsive"/></div>
         <div class="col-md-6">
-            <div class="row"><h3 id="cname">菜的名字</h3></div>
-            <div class="row"><p id="desc">菜的描述菜的描述菜的描述菜的描述菜的描述菜的描述菜的描述菜的描述菜的描述菜的描述菜的描述菜的描述菜的描述菜的描述菜的描述菜的描述</p></div>
-            <div class="row price-font"><strong id="price">￥ 99</strong></div>
+            <%--菜名--%>
+            <div class="row"><h3 id="cname"></h3></div>
+                <%--描述--%>
+            <div class="row"><p id="desc"></p></div>
+                <%--价格--%>
+            <div class="row price-font"><strong id="price">￥ 0</strong></div>
+                <%--数量选择--%>
             <div class="row">
                 <span>数量:</span>
                 <input id="subBtn" type="button" class="btn" value="-">
                 <input id="input_cnum" type="text" value="1" disabled="disabled">
                 <input id="addBtn" type="button"  class="btn" value="+">
-
             </div>
+                <%--提交按钮--%>
             <div class="row">
                 <button type="button" class="btn btn-warning btn-lg">加入菜篮子</button>
             </div>
         </div>
     </div>
-    <div class="row"></div>
 </div>
 
 <!-- 页脚 -->

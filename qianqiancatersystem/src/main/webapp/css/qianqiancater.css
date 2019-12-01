@@ -1,14 +1,14 @@
 /* -----------搜索框 -----------------*/
-.search-bar {
+#search-bar {
 	padding-top: 40px;
 	/* border: 2px solid #fda72c; */
 }
 
-.search-bar>input {
+#search-bar>input {
 	border-radius: 0;
 }
 
-.search-bar button {
+#search-bar button {
 	border-radius: 0;
 	background-color: #fda72c;
 }
@@ -34,6 +34,18 @@
 .specialty {
 	border-bottom: 2px solid #fda72c;
 	margin-bottom: 10px;
+}
+
+/* 首页每一个特色菜缩略图 ------------*/
+#cuisine-list{
+	cursor:pointer;
+}
+#cuisine-list .description-info{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp:4;
+	-webkit-box-orient: vertical;
 }
 
 /*页脚---------*/
