@@ -26,7 +26,7 @@ public class CuisineDaoImpl implements CuisineDao {
      * @return
      */
     @Override
-    public List<Cuisine> getCuiSineByCategory(int categoryId, int pageSize, int currentPage) throws SQLException {
+    public List<Cuisine> getCuiSineByCategoryPutaway(int categoryId, int pageSize, int currentPage) throws SQLException {
         String sql = "SELECT `cid`,`cname`,`description`,`image`,`price`,`putaway`,`joindate`,`categoryId`,`isSpecialty`\n" +
                     "FROM t_cuisine\n" +
                     "WHERE putaway='Y' AND categoryId = ?\n" +
@@ -46,7 +46,7 @@ public class CuisineDaoImpl implements CuisineDao {
      * @throws SQLException
      */
     @Override
-    public List<Cuisine> getCuiSineByName(String cname, int pageSize, int currentPage) throws SQLException {
+    public List<Cuisine> getCuiSineByNamePutaway(String cname, int pageSize, int currentPage) throws SQLException {
         String sql = "SELECT `cid`,`cname`,`description`,`image`,`price`,`putaway`,`joindate`,`categoryId`,`isSpecialty`\n" +
                 "FROM t_cuisine\n" +
                 "WHERE putaway = 'Y' AND cname LIKE ?"+
@@ -56,7 +56,7 @@ public class CuisineDaoImpl implements CuisineDao {
     }
 
     @Override
-    public Long getTotalPutawayNumByCategory(int categoryId) throws SQLException {
+    public Long getTotalNumByCategoryPutaway(int categoryId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM t_cuisine WHERE putaway='Y' AND categoryId=?";
         Long totalRecords = queryRunner.query(sql, new ScalarHandler<Long>(),categoryId);
         return totalRecords;
@@ -70,7 +70,7 @@ public class CuisineDaoImpl implements CuisineDao {
      * @throws SQLException
      */
     @Override
-    public Long getTotalPutawayNumByName(String cname) throws SQLException {
+    public Long getTotalNumByNamePutaway(String cname) throws SQLException {
         String sql = "SELECT COUNT(*) FROM t_cuisine WHERE putaway='Y' AND cname LIKE ?";
         Long totalRecords = queryRunner.query(sql, new ScalarHandler<Long>(),"%"+cname+"%");
         return totalRecords;

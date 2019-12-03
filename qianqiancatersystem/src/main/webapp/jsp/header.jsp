@@ -43,16 +43,16 @@
                     <!--导航栏的按钮 -->
                     <div class="collapse navbar-collapse" id="header-navbar">
                         <ul class="nav navbar-nav">
-                            <li class="active"><a href="${pageContext.request.contextPath}/jsp/index.jsp">首页</a></li>
-                            <li><a href="${pageContext.request.contextPath}/jsp/cuisine_list.jsp?categoryId=1">精品炒菜</a>
+                            <li><a href="${pageContext.request.contextPath}/jsp/index.jsp">首页</a></li>
+                            <li categoryId="1"><a href="${pageContext.request.contextPath}/jsp/cuisine_list.jsp?categoryId=1">精品炒菜</a>
                             </li>
-                            <li><a href="${pageContext.request.contextPath}/jsp/cuisine_list.jsp?categoryId=2">劲道面条</a>
+                            <li categoryId="2"><a href="${pageContext.request.contextPath}/jsp/cuisine_list.jsp?categoryId=2">劲道面条</a>
                             </li>
-                            <li><a href="${pageContext.request.contextPath}/jsp/cuisine_list.jsp?categoryId=3">美味汤羹</a>
+                            <li categoryId="3"><a href="${pageContext.request.contextPath}/jsp/cuisine_list.jsp?categoryId=3">美味汤羹</a>
                             </li>
-                            <li><a href="${pageContext.request.contextPath}/jsp/cuisine_list.jsp?categoryId=4">米饭盖饭</a>
+                            <li categoryId="4"><a href="${pageContext.request.contextPath}/jsp/cuisine_list.jsp?categoryId=4">米饭盖饭</a>
                             </li>
-                            <li><a href="${pageContext.request.contextPath}/jsp/cuisine_list.jsp?categoryId=5">饮品酒水</a>
+                            <li categoryId="5"><a href="${pageContext.request.contextPath}/jsp/cuisine_list.jsp?categoryId=5">饮品酒水</a>
                             </li>
                             <li><a href="#">宴席预定</a></li>
                             <li><a href="#">联系我们</a></li>
@@ -72,7 +72,7 @@
                     $span = $("<span>").html("欢迎回来，");
                     $a_nickname = $("<a>").html(data.extend.nickname).prop("href", "personal_data.jsp");
                     $a_quit = $("<a>").html("退出登录").prop("href", "#").prop("id", "a-logout");
-                    $a_shoppingcart = $("<a>").html("我的菜篮子").prop("href", "shoppingcart.jsp");
+                    $a_shoppingcart = $("<a>").html("我的菜篮子").prop("href", "food_basket.jsp");
                     $a_orderform = $("<a>").html("我的订单").prop("href", "orderform.jsp");
                     $("#login_info").append($span).append($a_nickname).append($a_quit).append($a_shoppingcart).append($a_orderform);
 

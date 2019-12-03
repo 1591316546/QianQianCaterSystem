@@ -8,6 +8,8 @@
 
     <script type="text/javascript">
         $(function () {
+            //点亮导航栏的首页按钮
+            $("#header-navbar>ul>li").first().addClass("active");
             /* 轮播图时间切换间隔 */
             $('.carousel').carousel({
                 interval: 2000
@@ -16,6 +18,7 @@
             //请求特色菜的数据
             $.get("${pageContext.request.contextPath}/cuisine/getSpecialCuisines",function (data) {
                 var cuisineList = data.extend.cuisines;
+                // 拼接Html
                 var cuisineListHtml = "";
                 for (var i=0;i<8; i++){
                     cuisineListHtml += '<div class="col-sm-6 col-md-3" cid="'+ cuisineList[i].cid +'">\n' +

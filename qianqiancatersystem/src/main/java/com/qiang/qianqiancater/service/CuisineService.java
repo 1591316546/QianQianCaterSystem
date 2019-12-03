@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface CuisineService {
     /**
-     * 根据类别和查询菜品并封装到分页对象中
+     * 根据类别和查询已上架菜品并封装到分页对象中
      * @param categoryId
      * @param pageSize
      * @param currentPage
@@ -19,7 +19,7 @@ public interface CuisineService {
     PageBean<Cuisine> getCuiSineByCategory(int categoryId, int pageSize, int currentPage);
 
     /**
-     * 根据名字查询的菜品封装到分页对象中
+     * 根据名字模糊查询已上架的菜品封装到分页对象中
      * @param cname
      * @param pageSize
      * @param currentPage

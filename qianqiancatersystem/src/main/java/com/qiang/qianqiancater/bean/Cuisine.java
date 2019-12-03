@@ -19,7 +19,7 @@ public class Cuisine {
     private Integer categoryId; // 分类id
     private String isSpecialty; //是否特色菜
 
-    private String categoryName; // 分类名称；
+    private Category category; // 分类信息；
 
     public Integer getCid() {
         return cid;
@@ -93,12 +93,12 @@ public class Cuisine {
         this.isSpecialty = isSpecialty;
     }
 
-    public String getCategoryName() {
-        return categoryName;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     @Override
@@ -113,7 +113,7 @@ public class Cuisine {
                 ", joindate=" + joindate +
                 ", categoryId=" + categoryId +
                 ", isSpecialty='" + isSpecialty + '\'' +
-                ", categoryName='" + categoryName + '\'' +
+                ", category=" + category +
                 '}';
     }
 }

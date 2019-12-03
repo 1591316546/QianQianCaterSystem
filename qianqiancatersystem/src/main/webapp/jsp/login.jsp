@@ -24,9 +24,13 @@
             $("#bs-example-navbar-collapse-1>ul>li").removeClass("active");
 
             //获取验证码
-            $("#check_code_link").click(function () {
+            function getCheckCode(){
                 var date = new Date().getTime();
                 $("#check_code").prop("src", "${pageContext.request.contextPath}/checkCodeServlet?" + date);
+            }
+            //点击换一张验证码
+            $("#check_code_link").click(function () {
+                getCheckCode();
                 return false;
             });
 
@@ -75,6 +79,8 @@
                             } else {
                                 // console.log("失败");
                                 alert(result.extend.hint);
+                                //刷新验证码
+                                getCheckCode();
                             }
                         }
                     });

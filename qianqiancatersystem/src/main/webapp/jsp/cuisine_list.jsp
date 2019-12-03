@@ -17,10 +17,13 @@
             //console.log(cname);
             //改变导航栏对应的按钮高亮显示
             if (categoryId){
-                $("#header-navbar>ul>li").removeClass("active").eq(categoryId).addClass("active");
-            }else {
-                $("#header-navbar>ul>li").removeClass("active");
+                //选择器
+                var expr = '#header-navbar>ul>li[categoryId='+ categoryId+']';
+                $(expr).addClass("active");
             }
+            // else {
+            //     $("#header-navbar>ul>li").removeClass("active");
+            // }
             //请求第一页的数据
             getPage(1);
 

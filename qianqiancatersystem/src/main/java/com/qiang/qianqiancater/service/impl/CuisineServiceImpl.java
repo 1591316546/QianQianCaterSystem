@@ -2,7 +2,9 @@ package com.qiang.qianqiancater.service.impl;
 
 import com.qiang.qianqiancater.bean.Cuisine;
 import com.qiang.qianqiancater.bean.PageBean;
+import com.qiang.qianqiancater.dao.CategoryDao;
 import com.qiang.qianqiancater.dao.CuisineDao;
+import com.qiang.qianqiancater.dao.impl.CategoryDaoImpl;
 import com.qiang.qianqiancater.dao.impl.CuisineDaoImpl;
 import com.qiang.qianqiancater.service.CuisineService;
 
@@ -15,15 +17,16 @@ import java.util.List;
 public class CuisineServiceImpl implements CuisineService {
 
     CuisineDao cuisineDao = new CuisineDaoImpl();
+    CategoryDao categoryDao = new CategoryDaoImpl();
 
     @Override
     public PageBean<Cuisine> getCuiSineByCategory(int categoryId, int pageSize, int currentPage) {
         PageBean<Cuisine> pageBean = new PageBean<>();
         try {
             //总记录数
-            long totalrecordsNum = cuisineDao.getTotalPutawayNumByCategory(categoryId);
+            long totalrecordsNum = cuisineDao.getTotalNumByCategoryPutaway(categoryId);
             //对应的记录列表
-            List<Cuisine> cuisineList = cuisineDao.getCuiSineByCategory(categoryId, pageSize, currentPage);
+            List<Cuisine> cuisineList = cuisineDao.getCuiSineByCategoryPutaway(categoryId, pageSize, currentPage);
             //总页数
             int totalPages = (int) (totalrecordsNum % pageSize == 0 ? totalrecordsNum / pageSize : totalrecordsNum / pageSize + 1);
             //封装pageBean对象
@@ -52,9 +55,9 @@ public class CuisineServiceImpl implements CuisineService {
         PageBean<Cuisine> pageBean = new PageBean<>();
         try {
             //总记录数
-            long totalrecordsNum = cuisineDao.getTotalPutawayNumByName(cname);
+            long totalrecordsNum = cuisineDao.getTotalNumByNamePutaway(cname);
             //对应的记录列表
-            List<Cuisine> cuisineList = cuisineDao.getCuiSineByName(cname, pageSize, currentPage);
+            List<Cuisine> cuisineList = cuisineDao.getCuiSineByNamePutaway(cname, pageSize, currentPage);
             //总页数
             int totalPages = (int) (totalrecordsNum % pageSize == 0 ? totalrecordsNum / pageSize : totalrecordsNum / pageSize + 1);
             //封装pageBean对象
@@ -79,7 +82,11 @@ public class CuisineServiceImpl implements CuisineService {
     @Override
     public Cuisine getCuisineById(int cid) {
         try {
-            return cuisineDao.getCuisineById(cid);
+            //查询到菜品信息
+            Cuisine cuisine = cuisineDao.getCuisineById(cid);
+            //补充菜品的类别信息
+            cuisine.setCategory(categoryDao.getCategoryById(cuisine.getCategoryId()));
+            return cuisine;
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -8,8 +8,6 @@
     <title>菜品详情页——千乾餐饮</title>
     <script type="text/javascript">
         $(function () {
-            //取消导航条首页标签高亮
-            $("#header-navbar>ul>li").removeClass("active");
             //获取参数
             var cid = getQueryVariable("cid");
             //获取对应的菜的详情
@@ -37,11 +35,12 @@
 
             // 按钮控制数量输入框
             $input_num = $("#input_cnum");
-            var num = $input_num.val();
             //加的按钮
             $("#addBtn").click(function () {
+                var num = $input_num.val();
                 //限制最大为10份
-                num += 1;
+                num = Number.parseInt(num);
+                num = num + 1;
                 if (num > 10){
                     num = 10;
                 }
@@ -49,12 +48,37 @@
             });
             //减号按钮
             $("#subBtn").click(function () {
+                var num = $input_num.val();
                 //限制最小为1份
                 num -=1;
                 if (num < 1){
                     num = 1;
                 }
                 $input_num.val(num);
+            });
+
+            //添加到菜篮子操作
+            $("#add-to-basket").click(function () {
+                //首先检查是否登录了
+                $.get("${pageContext.request.contextPath}/user/getLoginInfo",function (data) {
+                    if (data.code == 100){
+                        //登录了
+                        $.ajax({
+                            url:"${pageContext.request.contextPath}/order/addToBasket",
+                            data:{"cid":cid,"count":$("#input_cnum").val()}, //提交菜的cid 和数量
+                            success:function (data) {
+                                if (data.code == 100 ){
+                                    //加菜篮子成功
+                                    alert("成功加入菜篮子！");
+                                }
+                            }
+                        });
+                    }else {
+                        //没有登录
+                        alert("您尚未登录，请登录后操作！");
+                        location.href="${pageContext.request.contextPath }/jsp/login.jsp";
+                    }
+                });
             });
 
         });
@@ -88,7 +112,7 @@
             </div>
                 <%--提交按钮--%>
             <div class="row">
-                <button type="button" class="btn btn-warning btn-lg">加入菜篮子</button>
+                <button id="add-to-basket" type="button" class="btn btn-warning btn-lg">加入菜篮子</button>
             </div>
         </div>
     </div>

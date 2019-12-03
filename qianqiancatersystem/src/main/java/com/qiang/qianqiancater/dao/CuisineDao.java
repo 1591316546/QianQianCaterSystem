@@ -16,7 +16,7 @@ public interface CuisineDao {
      * @param currentPage
      * @return
      */
-    List<Cuisine> getCuiSineByCategory(int categoryId, int pageSize, int currentPage) throws SQLException;
+    List<Cuisine> getCuiSineByCategoryPutaway(int categoryId, int pageSize, int currentPage) throws SQLException;
 
     /**
      * 根据菜名模糊搜索
@@ -26,7 +26,7 @@ public interface CuisineDao {
      * @return
      * @throws SQLException
      */
-    List<Cuisine> getCuiSineByName(String cname, int pageSize, int currentPage) throws SQLException;
+    List<Cuisine> getCuiSineByNamePutaway(String cname, int pageSize, int currentPage) throws SQLException;
 
     /**
      * 获取对应类别上架的菜品总数
@@ -34,15 +34,15 @@ public interface CuisineDao {
      * @return
      * @throws SQLException
      */
-    Long getTotalPutawayNumByCategory(int categoryId) throws SQLException;
+    Long getTotalNumByCategoryPutaway(int categoryId) throws SQLException;
 
     /**
-     * 获取对应类别上架的菜品总数
+     * 模糊搜索对应名字的菜品总数
      * @param cname
      * @return
      * @throws SQLException
      */
-    Long getTotalPutawayNumByName(String cname) throws SQLException;
+    Long getTotalNumByNamePutaway(String cname) throws SQLException;
 
     /**
      * 根据id获取菜品

@@ -135,7 +135,9 @@ public class UserServlet extends BaseServlet {
         int result =  userService.login(username,password);
         if (result == 1){
             //登录成功，用户信息写入session
-            request.getSession().setAttribute("username",username);
+            User user =  userService.getUserByUsername(username);
+            request.getSession().setAttribute("user",user);
+            //响应
             responseMsg(true,"登录成功！",response);
         }else if (result == 2){
             responseMsg(false,"账户没有激活",response);
@@ -153,13 +155,15 @@ public class UserServlet extends BaseServlet {
      * @throws IOException
      */
     public void getLoginInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String username = (String) request.getSession().getAttribute("username");
-        if (username == null){
-            return;
+        User user = (User) request.getSession().getAttribute("user");
+        if (user == null){
+            //未登录
+            responseMsg(Msg.fail(),response);
+        }else {
+            //已登录
+            Msg msg = Msg.success().add("nickname", user.getNickname());
+            responseMsg(msg,response);
         }
-        User user =  userService.getUserByUsername(username);
-        Msg msg = Msg.success().add("nickname", user.getNickname());
-        responseMsg(msg,response);
     }
 
     /**
