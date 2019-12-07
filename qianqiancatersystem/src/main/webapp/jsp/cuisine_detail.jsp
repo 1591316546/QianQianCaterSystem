@@ -70,6 +70,7 @@
                                 if (data.code == 100 ){
                                     //加菜篮子成功
                                     alert("成功加入菜篮子！");
+                                    location.href="${pageContext.request.contextPath}/jsp/food_basket.jsp";
                                 }
                             }
                         });

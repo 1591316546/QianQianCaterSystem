@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
                 try {
                     String addr = InetAddress.getLocalHost().getHostAddress();//获得本机IP
                     //拼接激活url
-                    String url = "http://" + addr + "/user/activeAccount?activeCode=" + activeCode;
+                    String url = "http://" + addr + ":8080/qianqiancater/user/activeAccount?activeCode=" + activeCode;
                     MailUtils.sendEmail("千乾餐饮新用户注册激活",
                             "您已经注册成功，<a href='" + url + "'>点击此处激活账户</a>。" +
                                     "如果不能自动跳转，请手动复制以下地址到浏览器地址栏激活。<br/>" +
