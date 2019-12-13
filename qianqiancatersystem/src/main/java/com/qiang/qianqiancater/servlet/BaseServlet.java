@@ -36,6 +36,7 @@ public class BaseServlet extends HttpServlet {
             method.invoke(this,req,resp);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
+            responseMsg(Msg.fail().add("hint","没有此功能！"),resp);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {

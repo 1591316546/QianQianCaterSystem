@@ -63,4 +63,44 @@ public interface CuisineDao {
      * @return
      */
     List<Cuisine> getSpecialtyCuisine() throws SQLException;
+
+    /**
+     * 分页获取全部的菜品
+     * @return
+     */
+    List<Cuisine> getAllCuisines(int pageSize ,int currentPage) throws SQLException;
+
+    /**
+     * 所有菜品的数量
+     * @return
+     */
+    Long allCuisineCount() throws SQLException;
+
+    /**
+     * 保存菜品
+     * @param cuisine
+     * @return
+     */
+    int saveCuisine(Cuisine cuisine) throws SQLException;
+
+    /**
+     * 修改菜品
+     * @param cuisine
+     * @return
+     */
+    int updateCuisine(Cuisine cuisine) throws SQLException;
+
+    /**
+     * 修改上下架状态
+     * @param cid
+     * @param putaway
+     * @return
+     */
+    void updatePutaway(int cid , String putaway) throws SQLException;
+
+    /**
+     * 删除多个
+     * @param cid
+     */
+    void delete(int cid) throws SQLException;
 }

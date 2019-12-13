@@ -20,16 +20,8 @@
                         $("#cname").text(cuisine.cname);
                         $("#desc").text(cuisine.description);
                         $("#price").text("￥ "+cuisine.price);
+                        $("#cuisine-image").prop("src","${pageContext.request.contextPath}/"+cuisine.image);
                     }
-                }
-            });
-
-            //获取菜的图片
-            $.ajax({
-                url:"${pageContext.request.contextPath}/cuisine/getCuisineBigImg",
-                data:{"cid":cid},
-                success:function (data) {
-                    $("#cuisine-image").prop("src","${pageContext.request.contextPath}/"+data.extend.imgPath);
                 }
             });
 

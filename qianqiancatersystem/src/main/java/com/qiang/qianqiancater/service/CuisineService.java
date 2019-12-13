@@ -3,6 +3,7 @@ package com.qiang.qianqiancater.service;
 import com.qiang.qianqiancater.bean.Cuisine;
 import com.qiang.qianqiancater.bean.PageBean;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -46,4 +47,39 @@ public interface CuisineService {
      * @return
      */
     List<Cuisine> getSpecialtyCuisine();
+
+    /**
+     * 获取所有菜品封装到pageBean
+     * @param pageSize
+     * @param currentPage
+     * @return
+     */
+    PageBean<Cuisine> getAllCuiSines(int pageSize, int currentPage);
+
+    /**
+     * 保存菜品 成功返回true
+     * @param cuisine
+     * @return
+     */
+    boolean saveCuisine(Cuisine cuisine);
+
+    /**
+     * 修改菜品 成功返回true
+     * @param cuisine
+     * @return
+     */
+    boolean updateCuisine(Cuisine cuisine);
+
+    /**
+     * 修改上架下架的状态
+     * @param cids
+     * @param putaway
+     */
+    boolean updatePutaway(String[] cids ,String putaway);
+
+    /**
+     * 删除
+     * @param cids
+     */
+    boolean delete(String[] cids) ;
 }

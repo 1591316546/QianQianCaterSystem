@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>所有菜品</title>
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css"/>
+    <script src="../js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        //对日期类扩展使其能格式化日期
+        Date.prototype.format = function (fmt) {
+            var o = {
+                "M+": this.getMonth() + 1, //月份
+                "d+": this.getDate(), //日
+                "h+": this.getHours(), //小时
+                "m+": this.getMinutes(), //分
+                "s+": this.getSeconds(), //秒
+                "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+                "S": this.getMilliseconds() //毫秒
+            };
+            if (/(y+)/.test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            }
+            for (var k in o) {
+                if (new RegExp("(" + k + ")").test(fmt)) {
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ?
+                        (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                }
+            }
+            return fmt;
+        }
+    </script>
+    <style type="text/css">
+        /* 描述信息超出省略 */
+        body {
+            padding-top: 20px;
+        }
+
+        table p {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <button id="btn-batch-down" class="layui-btn  layui-btn-normal">批量下架</button>
+        <button id="btn-batch-up" class="layui-btn  layui-btn-warm">批量上架</button>
+        <!--菜品是不能删除的，因为订单里面有菜品的外键，删除掉菜品订单里就没有了，这说不过去，只能说下架了，不能再买了-->
+        <!-- <button id="btn-batch-delete" class="layui-btn  layui-btn-danger">批量删除</button>-->
+    </div>
+    <div class="layui-row">
+            <form id="form-batch">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th><input id="checkbox-batch" type="checkbox" /></th>
+                    <th>图片</th>
+                    <th>ID</th>
+                    <th>名称</th>
+                    <th>描述信息</th>
+                    <th>单价</th>
+                    <th>上架状态</th>
+                    <th>入库时间</th>
+                    <th>类别</th>
+                    <th>是否特色菜</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbody-cuisines">
+                <!--<tr>
+                    <td><input type="checkbox" name="cid" value="1"/></td>
+                    <td><img src="../img/cuisine/thumb/1.jpg"/></td>
+                    <td>1</td>
+                    <td>菜的名字</td>
+                    <td>
+                        <p>描述酱油。描述酱油。描述酱油。描述酱油。描述酱油。描述酱油。描述酱油。描述酱油。描述酱油。描述酱油。描述酱油。描述酱油。描述酱油。描述酱油。</p>
+                    </td>
+                    <td>￥ 99</td>
+                    <td>上架</td>
+                    <td>2019-12-12 12:12:12</td>
+                    <td>炒菜</td>
+                    <td>是</td>
+                    <td>
+                        <div class="layui-btn-group">
+                            <a href="#" class="layui-btn layui-btn-xs layui-btn-normal">上架</a>
+                            <a href="#" class="layui-btn layui-btn-xs layui-btn-warm">下架</a>
+                            <a href="#" class="layui-btn layui-btn-xs">修改</a>
+                            <a href="#" class="layui-btn layui-btn-xs layui-btn-danger">删除</a>
+                        </div>
+                    </td>
+                </tr>-->
+                </tbody>
+            </table>
+                </form>
+    </div>
+    <div class="layui-row">
+        <div id="paging"></div>
+    </div>
+</div>
+
+<script>
+    /**
+     * 获取hash参数
+     */
+    function getHashParameter(key){
+        var params = getHashParameters();
+        return params[key];
+    }
+
+    function getHashParameters(){
+        var arr = (location.hash || "").replace(/^\#/,'').split("&");
+        var params = {};
+        for(var i=0; i<arr.length; i++){
+            var data = arr[i].split("=");
+            if(data.length == 2){
+                params[data[0]] = data[1];
+            }
+        }
+        return params;
+    }
+
+    layui.use(['table', 'laypage'], function () {
+        var table = layui.table;
+        var laypage = layui.laypage;
+        //分页大小 每页显示的条数
+        var pageSize = 3;
+        //看Url 里面的当前页的值
+        var fenyeHash = getHashParameter("!fenye");
+        // console.log(fenyeHash);
+        //当前页
+        var currPage = 1;
+        if (fenyeHash != undefined){
+            currPage = fenyeHash;
+        }
+        //获取数据,显示第一页数据
+        getAllCuisinesDisplay(pageSize,currPage);
+
+
+        //从服务端拿到菜品数据并解析填充页面
+        function getAllCuisinesDisplay(pageSize, currentPage) {
+            $.ajax({
+                url: "../cuisine/getAllCuisines",
+                data: {
+                    "pageSize": pageSize,
+                    "currentPage": currentPage
+                },
+                success: function (result) {
+                    // console.log(result);
+                    if (result.code == 100) {
+                        //获取数据中的分页对象
+                        var page = result.extend.page;
+                        //渲染数据
+                        display(page);
+                        //总记录数
+                        var totalRecords = page.totalRecords;
+                        //执行一个laypage实例 ,显示分页
+                        laypage.render({
+                            elem: 'paging', //注意，这里的 test1 是 ID，不用加 # 号
+                            count: totalRecords, //数据总数，从服务端得到
+                            limit: pageSize,
+                            layout: ['count', 'prev', 'page', 'next', 'refresh', 'skip'],
+                            curr: location.hash.replace('#!fenye=', ''), //获取起始页
+                            hash: 'fenye', //自定义hash值
+                            jump: function (obj, first) {
+                                //obj包含了当前分页的所有参数，比如：
+                                // console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                                // console.log(obj.limit); //得到每页显示的条数
+                                currPage = obj.curr;
+                                if (!first) {
+                                    //点击对应分页获取对应的数据
+                                    getAllCuisinesDisplay(obj.limit, obj.curr);
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        //显示到页面
+        function display(page) {
+            //清除批量按钮的选中状态
+            $("#checkbox-batch").removeProp("checked");
+            //数据数组
+            var cuisineArray = page.dataList;
+            //拼接表格里的每一行
+            var trHtml = "";
+            for (var i = 0; i < cuisineArray.length; i++) {
+                //每一个菜品对象
+                var cuisine = cuisineArray[i];
+                //上架状态
+                var putawayStatus = "上架";
+                if (cuisine.putaway != "Y") {
+                    putawayStatus = "已下架";
+                }
+
+                //入库时间
+                var joindate = new Date(cuisine.joindate).format("yyyy-MM-dd hh:mm:ss");
+                //判断特色菜
+                var isSpecialty = "否";
+                if (cuisine.isSpecialty == "Y") {
+                    isSpecialty = "是";
+                }
+
+                //拼接数据
+                trHtml += '<tr>\n' +
+                    '    <td><input class="checkbox-each" type="checkbox" name="cid" value="' + cuisine.cid + '" /></td>\n' +
+                    '    <td><img src="../' + cuisine.image + '" /></td>\n' +
+                    '    <td>' + cuisine.cid + '</td>\n' +
+                    '    <td>' + cuisine.cname + '</td>\n' +
+                    '    <td>\n' +
+                    '        <p>' + cuisine.description + '</p>\n' +
+                    '    </td>\n' +
+                    '    <td>￥ ' + cuisine.price + '</td>\n' +
+                    '    <td>' + putawayStatus + '</td>\n' +
+                    '    <td>' + joindate + '</td>\n' +
+                    '    <td>' + cuisine.category.categoryName + '</td>\n' +
+                    '    <td>' + isSpecialty + '</td>\n' +
+                    '    <td>\n' +
+                    '        <div class="layui-btn-group">\n' +
+                    '            <a href="javascript:;" op="cid='+cuisine.cid+'&putaway=Y" class="layui-btn layui-btn-xs layui-btn-normal cuisine-op">上架</a>\n' +
+                    '            <a href="javascript:;" op="cid='+cuisine.cid+'&putaway=N" class="layui-btn layui-btn-xs layui-btn-warm  cuisine-op">下架</a>\n' +
+                    '            <a href="javascript:;" class="layui-btn layui-btn-xs">修改</a>\n' +
+                    '        </div>\n' +
+                    '    </td>\n' +
+                    '</tr>';
+            }
+            //显示到页面上
+            $("#tbody-cuisines").html(trHtml);
+            //页面渲染完绑定单个操作事件
+            //单个上、下架按钮
+            $("table .layui-btn-group a.cuisine-op").on('click',function () {
+                // console.log("点击了");
+                $.post("../cuisine/changePutaway",$(this).attr("op"),function (result) {
+                    if (result.code == 100 ){
+                        //操作成功跳到当前页
+                        getAllCuisinesDisplay(pageSize, currPage);
+                    }else {
+                        //提示
+                        layer.msg("操作失败！");
+                    }
+                });
+            });
+        }
+
+        //批量选择按钮点击事件
+        $("#checkbox-batch").click(function () {
+            //子选择的属性根据批量选择框变化
+            $(".checkbox-each").prop("checked", this.checked);
+        });
+
+        //批量下架按钮
+        $("#btn-batch-down").click(function () {
+            // console.log($("#form-batch").serialize());
+            $.post("../cuisine/changePutaway",$("#form-batch").serialize()+"&putaway=N",function (result) {
+                if (result.code == 100 ){
+                    //操作成功跳到当前页
+                    getAllCuisinesDisplay(pageSize, currPage);
+                }else {
+                    //提示
+                    layer.msg("操作失败！");
+                }
+            });
+        });
+
+        //批量上架按钮
+        $("#btn-batch-up").click(function () {
+            $.post("../cuisine/changePutaway",$("#form-batch").serialize()+"&putaway=Y",function (result) {
+                if (result.code == 100 ){
+                    //操作成功跳到当前页
+                    getAllCuisinesDisplay(pageSize, currPage);
+                }else {
+                    //提示
+                    layer.msg("操作失败！");
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

@@ -15,7 +15,7 @@ public class Cuisine {
     private Double price; //价格
     private String putaway; //上架状态
 
-    private Date joindate; //上架时间
+    private Date joindate; //入库时间
     private Integer categoryId; // 分类id
     private String isSpecialty; //是否特色菜
 

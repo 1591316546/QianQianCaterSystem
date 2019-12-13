@@ -8,6 +8,7 @@ import com.qiang.qianqiancater.dao.impl.CategoryDaoImpl;
 import com.qiang.qianqiancater.dao.impl.CuisineDaoImpl;
 import com.qiang.qianqiancater.service.CuisineService;
 
+import javax.xml.stream.FactoryConfigurationError;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -125,4 +126,118 @@ public class CuisineServiceImpl implements CuisineService {
         }
         return cuisineList;
     }
+
+    /**
+     * 获取所有菜品封装到pageBean
+     *
+     * @param pageSize
+     * @param currentPage
+     * @return
+     */
+    @Override
+    public PageBean<Cuisine> getAllCuiSines(int pageSize, int currentPage) {
+        List<Cuisine> allCuisines = null;
+        long cuisineCount = 0;
+        try {
+            allCuisines = cuisineDao.getAllCuisines(pageSize, currentPage);
+            //查询每个菜的分类信息
+            for (Cuisine cuisine : allCuisines) {
+                cuisine.setCategory(categoryDao.getCategoryById(cuisine.getCategoryId()));
+            }
+            cuisineCount = cuisineDao.allCuisineCount();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        //封装pageBean
+        PageBean<Cuisine> pageBean = new PageBean<>();
+        pageBean.setTotalRecords((int) cuisineCount);
+        int totalPages = (int) (cuisineCount % pageSize == 0 ? cuisineCount / pageSize : cuisineCount / pageSize + 1);
+        pageBean.setTotalPages(totalPages);
+        pageBean.setPageSize(pageSize);
+        pageBean.setCurrentPage(currentPage);
+        pageBean.setDataList(allCuisines);
+        return pageBean;
+    }
+
+    /**
+     * 保存菜品 成功返回true
+     *
+     * @param cuisine
+     * @return
+     */
+    @Override
+    public boolean saveCuisine(Cuisine cuisine) {
+        int i = 0;
+        try {
+            i = cuisineDao.saveCuisine(cuisine);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (i == 1) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 修改菜品 成功返回true
+     *
+     * @param cuisine
+     * @return
+     */
+    @Override
+    public boolean updateCuisine(Cuisine cuisine) {
+        int i = 0;
+        try {
+            i = cuisineDao.updateCuisine(cuisine);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (i == 1) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 修改上架下架的状态
+     *
+     * @param cids
+     * @param putaway
+     */
+    @Override
+    public boolean updatePutaway(String[] cids, String putaway) {
+        try {
+            for (String cidStr : cids) {
+                int cid = 0;
+                cid = Integer.parseInt(cidStr);
+                cuisineDao.updatePutaway(cid, putaway);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 删除
+     *
+     * @param cids
+     */
+    @Override
+    public boolean delete(String[] cids) {
+        try {
+            for (String cidStr : cids) {
+                int cid = 0;
+                cid = Integer.parseInt(cidStr);
+                cuisineDao.delete(cid);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

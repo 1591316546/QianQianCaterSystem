@@ -34,6 +34,14 @@ public class CuisineDaoImplTest {
             e.printStackTrace();
         }
     }
+    @Test
+    public void testUpdatePutaway(){
+        try {
+            cuisineDao.updatePutaway(1,"N");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }
