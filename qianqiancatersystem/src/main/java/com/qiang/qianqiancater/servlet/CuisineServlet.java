@@ -190,7 +190,7 @@ public class CuisineServlet extends BaseServlet {
                 //获取输入流
                 InputStream inputStream = fi.getInputStream();
 
-                //获取"/img/的真实路径
+                //获取"/img的真实路径
                 String realPath = getServletContext().getRealPath("/img");
                 //创建目录
                 File dirFile = new File(realPath, dir);
@@ -253,7 +253,7 @@ public class CuisineServlet extends BaseServlet {
     }
 
     /**
-     * 删除菜品
+     * 删除菜品，不可以删除菜品 ，无用接口
      */
     public void deleteCuisine(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String[] cid = request.getParameterValues("cid");
@@ -264,4 +264,63 @@ public class CuisineServlet extends BaseServlet {
             responseMsg(Msg.fail(), response);
         }
     }
+
+    /**
+     * 接收上传上来的菜品图片并存储
+     */
+    public void uploadImage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        DiskFileItemFactory factory = new DiskFileItemFactory();
+        ServletFileUpload upload = new ServletFileUpload(factory);
+        List<FileItem> fileItems = upload.parseRequest(request);
+        for (FileItem fileItem : fileItems) {
+            //文件域处理
+            if (!fileItem.isFormField()) {
+                //获取文件名
+                String fileName = fileItem.getName();
+                String realName = FileUploadUtil.getRealName(fileName);
+                String uuidName = FileUploadUtil.getUUIDName(realName);
+
+                //获取 /img 的真实路径
+                String imgRealPath = getServletContext().getRealPath("/img");
+                String dir = "/cuisine";//存储的文件夹
+
+                //获取输入流
+                InputStream is = fileItem.getInputStream();
+
+                //输出流
+                FileOutputStream os = new FileOutputStream(new File(imgRealPath + dir, uuidName));
+
+                //流对拷
+                IOUtils.copy(is, os);
+                //释放资源
+                is.close();
+                os.close();
+                //删除临时文件
+                fileItem.delete();
+                //保存路径并响应
+                String imgPath = "img" + dir + "/" + uuidName;
+                responseMsg(Msg.success().add("imagePath", imgPath), response);
+                return;
+            }
+        }
+        responseMsg(Msg.fail(), response);
+    }
+
+    /**
+     * 修改菜品信息
+     */
+    public void alterCuisine(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        Cuisine cuisine = new Cuisine();
+        BeanUtils.populate(cuisine,parameterMap);
+//        System.out.println(cuisine);
+        //修改菜品信息
+        boolean b = cuisineService.updateCuisine(cuisine);
+        if (b){//成功吗
+            responseMsg(Msg.success(),response);
+        }else {
+            responseMsg(Msg.fail(),response);
+        }
+    }
+
 }

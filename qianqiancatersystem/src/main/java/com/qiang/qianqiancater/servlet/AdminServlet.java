@@ -32,7 +32,7 @@ public class AdminServlet extends BaseServlet {
             return;
         }
         //登录成功存入session
-        request.getSession().setAttribute("user", admin);
+        request.getSession().setAttribute("admin", admin);
         responseMsg(Msg.success(), response);
     }
 
@@ -40,7 +40,7 @@ public class AdminServlet extends BaseServlet {
      * 获取登录者信息
      */
     public void loginInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Admin admin = (Admin) request.getSession().getAttribute("user");
+        Admin admin = (Admin) request.getSession().getAttribute("admin");
         if (admin == null) {
             //未登录
             responseMsg(Msg.fail(), response);

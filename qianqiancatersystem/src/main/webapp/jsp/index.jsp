@@ -23,7 +23,7 @@
                 for (var i=0;i<8; i++){
                     cuisineListHtml += '<div class="col-sm-6 col-md-3" cid="'+ cuisineList[i].cid +'">\n' +
                         '    <div class="thumbnail">\n' +
-                        '        <img src="${pageContext.request.contextPath}/'+ cuisineList[i].image +'" alt="...">\n' +
+                        '        <img class="imgthumb" src="${pageContext.request.contextPath}/'+ cuisineList[i].image +'" alt="...">\n' +
                         '        <div class="caption">\n' +
                         '            <h4>'+ cuisineList[i].cname +'</h4>\n' +
                         '            <p class="description-info">'+ cuisineList[i].description+'</p>\n' +

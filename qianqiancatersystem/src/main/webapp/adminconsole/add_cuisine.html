@@ -19,7 +19,7 @@
 
         <div class="layui-row"><h2>添加菜品</h2></div>
         <div class="layui-row">
-            <form id="form-add-cuisine" class="layui-form  layui-form-pane" action="../cuisine/addCuisine" enctype="multipart/form-data" method="post">
+            <form id="form-add-cuisine" class="layui-form" action="../cuisine/addCuisine" enctype="multipart/form-data" method="post">
                 <div class="layui-form-item">
                     <label class="layui-form-label">菜品名称</label>
                     <div class="layui-input-block">
@@ -107,8 +107,8 @@
                             return;
                         };
 
-                        //开启加载等待层
-                        layer.load();
+                        //开启加载中提示层
+                        var loading = layer.load();
 
                         $.ajax({
                             url:"../cuisine/addCuisine",
@@ -119,20 +119,20 @@
                             contentType: false,
                             dataType:"json",
                             success: function (result) {
-                                layer.close();//关闭加载提示层
+                                layer.close(loading);//关闭加载提示层
                                 //console.log(result);//打印服务端返回的数据(调试用)
                                 if(result.code== 100){
                                     layer.alert("保存成功！",function (index) {
                                         $('#form-add-cuisine')[0].reset();//重置表单
                                         $("#img-cuisine").hide();//隐藏图片
-                                        layer.close(index);//关闭弹窗
+                                        layer.close(index);//点击确定关闭自身
                                     });
                                 }else{
                                     layer.msg("保存失败！");
                                 }
                             },
                             error:function () {
-                                layer.close();//关闭加载提示层
+                                layer.close(loading);//关闭加载提示层
                                 layer.msg("网络错误，保存失败！");
                             }
                         });

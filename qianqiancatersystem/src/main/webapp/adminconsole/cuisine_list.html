@@ -54,11 +54,11 @@
         <!-- <button id="btn-batch-delete" class="layui-btn  layui-btn-danger">批量删除</button>-->
     </div>
     <div class="layui-row">
-            <form id="form-batch">
+        <form id="form-batch">
             <table class="layui-table">
                 <thead>
                 <tr>
-                    <th><input id="checkbox-batch" type="checkbox" /></th>
+                    <th><input id="checkbox-batch" type="checkbox"/></th>
                     <th>图片</th>
                     <th>ID</th>
                     <th>名称</th>
@@ -96,7 +96,7 @@
                 </tr>-->
                 </tbody>
             </table>
-                </form>
+        </form>
     </div>
     <div class="layui-row">
         <div id="paging"></div>
@@ -107,26 +107,30 @@
     /**
      * 获取hash参数
      */
-    function getHashParameter(key){
+    function getHashParameter(key) {
         var params = getHashParameters();
         return params[key];
     }
 
-    function getHashParameters(){
-        var arr = (location.hash || "").replace(/^\#/,'').split("&");
+    function getHashParameters() {
+        var arr = (location.hash || "").replace(/^\#/, '').split("&");
         var params = {};
-        for(var i=0; i<arr.length; i++){
+        for (var i = 0; i < arr.length; i++) {
             var data = arr[i].split("=");
-            if(data.length == 2){
+            if (data.length == 2) {
                 params[data[0]] = data[1];
             }
         }
         return params;
     }
 
-    layui.use(['table', 'laypage'], function () {
+    layui.use(['table', 'laypage', 'layer', 'form','upload'], function () {
         var table = layui.table;
         var laypage = layui.laypage;
+        var layer = layui.layer;
+        var form = layui.form;
+        var upload = layui.upload;
+
         //分页大小 每页显示的条数
         var pageSize = 3;
         //看Url 里面的当前页的值
@@ -134,11 +138,11 @@
         // console.log(fenyeHash);
         //当前页
         var currPage = 1;
-        if (fenyeHash != undefined){
+        if (fenyeHash != undefined) {
             currPage = fenyeHash;
         }
         //获取数据,显示第一页数据
-        getAllCuisinesDisplay(pageSize,currPage);
+        getAllCuisinesDisplay(pageSize, currPage);
 
 
         //从服务端拿到菜品数据并解析填充页面
@@ -223,9 +227,9 @@
                     '    <td>' + isSpecialty + '</td>\n' +
                     '    <td>\n' +
                     '        <div class="layui-btn-group">\n' +
-                    '            <a href="javascript:;" op="cid='+cuisine.cid+'&putaway=Y" class="layui-btn layui-btn-xs layui-btn-normal cuisine-op">上架</a>\n' +
-                    '            <a href="javascript:;" op="cid='+cuisine.cid+'&putaway=N" class="layui-btn layui-btn-xs layui-btn-warm  cuisine-op">下架</a>\n' +
-                    '            <a href="javascript:;" class="layui-btn layui-btn-xs">修改</a>\n' +
+                    '            <a href="javascript:;" op="cid=' + cuisine.cid + '&putaway=Y" class="layui-btn layui-btn-xs layui-btn-normal cuisine-op">上架</a>\n' +
+                    '            <a href="javascript:;" op="cid=' + cuisine.cid + '&putaway=N" class="layui-btn layui-btn-xs layui-btn-warm  cuisine-op">下架</a>\n' +
+                    '            <a href="javascript:;" cid="' + cuisine.cid + '" class="layui-btn layui-btn-xs cuisine-alter">修改</a>\n' +
                     '        </div>\n' +
                     '    </td>\n' +
                     '</tr>';
@@ -234,17 +238,23 @@
             $("#tbody-cuisines").html(trHtml);
             //页面渲染完绑定单个操作事件
             //单个上、下架按钮
-            $("table .layui-btn-group a.cuisine-op").on('click',function () {
+            $("table .layui-btn-group a.cuisine-op").on('click', function () {
                 // console.log("点击了");
-                $.post("../cuisine/changePutaway",$(this).attr("op"),function (result) {
-                    if (result.code == 100 ){
+                $.post("../cuisine/changePutaway", $(this).attr("op"), function (result) {
+                    if (result.code == 100) {
                         //操作成功跳到当前页
                         getAllCuisinesDisplay(pageSize, currPage);
-                    }else {
+                    } else {
                         //提示
                         layer.msg("操作失败！");
                     }
                 });
+            });
+            //修改按钮
+            $("table .layui-btn-group a.cuisine-alter").on('click', function () {
+                // console.log("点击了");
+                //调用修改方法
+                alterCuisineInfo($(this).attr("cid"));
             });
         }
 
@@ -257,11 +267,11 @@
         //批量下架按钮
         $("#btn-batch-down").click(function () {
             // console.log($("#form-batch").serialize());
-            $.post("../cuisine/changePutaway",$("#form-batch").serialize()+"&putaway=N",function (result) {
-                if (result.code == 100 ){
+            $.post("../cuisine/changePutaway", $("#form-batch").serialize() + "&putaway=N", function (result) {
+                if (result.code == 100) {
                     //操作成功跳到当前页
                     getAllCuisinesDisplay(pageSize, currPage);
-                }else {
+                } else {
                     //提示
                     layer.msg("操作失败！");
                 }
@@ -270,17 +280,163 @@
 
         //批量上架按钮
         $("#btn-batch-up").click(function () {
-            $.post("../cuisine/changePutaway",$("#form-batch").serialize()+"&putaway=Y",function (result) {
-                if (result.code == 100 ){
+            $.post("../cuisine/changePutaway", $("#form-batch").serialize() + "&putaway=Y", function (result) {
+                if (result.code == 100) {
                     //操作成功跳到当前页
                     getAllCuisinesDisplay(pageSize, currPage);
-                }else {
+                } else {
                     //提示
                     layer.msg("操作失败！");
                 }
             });
         });
+
+        //修改菜品信息的方法
+        function alterCuisineInfo(cid) {
+            // console.log("菜品ID："+cid);
+            //从后台请求要修改的菜品的信息
+            $.ajax({
+                url: '../cuisine/getCuisineById',
+                data: "cid=" + cid,
+                success: function (result) {
+                    if (result.code == 100) {
+                        var cuisine = result.extend.cuisine;
+                        //给表单赋值
+                        form.val("form-alter-cuisine", { //即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                            "cid": cuisine.cid
+                            ,"cname": cuisine.cname // "name": "value"
+                            , "description": cuisine.description
+                            ,"image":cuisine.image
+                            , "price": cuisine.price
+                            , "categoryId": cuisine.categoryId
+                            , "isSpecialty": cuisine.isSpecialty
+                        });
+                        //设置图片
+                        $("#alter-cuisine-img").prop("src","../"+cuisine.image);
+                    }
+                }
+            });
+            //弹出修改菜品信息的弹框
+            layer.open({
+                type: 1,
+                title: ['修改菜品的信息', 'font-size:18px;'],
+                content: $('#modal-box'),//这里content是一个DOM
+                area: ['600px', '600px'],
+                maxmin: true
+            });
+        }
+
+        //上传修改后的图片
+        upload.render({
+            elem: '#btn-alter-img'
+            ,url: '../cuisine/uploadImage'
+            ,choose: function(obj){
+                obj.preview(function (index, file, result) {
+                    //预览图片
+                    $("#alter-cuisine-img").prop("src",result);
+                });
+            }
+            ,before: function(obj){
+                layer.load(); //上传loading
+            }
+            ,done: function(result, index, upload){ //上传后的回调
+                // console.log(result);
+                layer.closeAll("loading");
+                //设置图片隐藏域
+                $("#input-image").val(result.extend.imagePath);
+            }
+        });
+
+        //保存修改
+        form.on('submit(alter)', function(data){
+            // console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            var loading = layer.load();//提示保存中
+            //保存修改
+            $.ajax({
+                url:"../cuisine/alterCuisine",
+                type: "POST",
+                data:data.field,
+                success:function (result) {
+                    layer.close(loading);//关闭loading
+                    if (result.code == 100){
+                        layer.alert("保存成功！",function (index) {
+                            //点击确定后的回调
+                            layer.closeAll();//关闭所有弹层
+                            location.reload();//刷新当前页面
+                        });
+                    }else {
+                        layer.msg(result.msg);
+                    }
+                },
+                error:function () {
+                    layer.msg("网络错误！");
+                }
+            });
+            return false; //阻止表单跳转
+        });
     });
 </script>
+<!--修改菜品信息的模态框-->
+<div id="modal-box" class="layui-fluid" style="display: none;">
+    <div class="layui-row">
+        <img id="alter-cuisine-img" style="width: 200px;margin-bottom: 10px" src="../img/cuisine/1.jpg" alt=""/>
+    </div>
+    <div class="layui-row">
+        <button id="btn-alter-img" class="layui-btn">修改图片</button>
+    </div>
+    <div class="layui-row">
+        <form id="form-alter-cuisine" class="layui-form" lay-filter="form-alter-cuisine"
+              enctype="multipart/form-data">
+            <input type="hidden" name="cid" >
+            <input type="hidden" id="input-image" name="image" >
+            <div class="layui-form-item">
+                <label class="layui-form-label">菜品名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="cname" required lay-verify="required" placeholder="请输入名称"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">菜品描述</label>
+                <div class="layui-input-block">
+                    <textarea name="description" placeholder="请输入描述信息" class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">价格</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="price" required lay-verify="required|number" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">选择分类</label>
+                <div class="layui-input-block">
+                    <select name="categoryId" lay-verify="required">
+                        <option value="">点击选择分类</option>
+                        <option value="1">炒菜</option>
+                        <option value="2">面条</option>
+                        <option value="3">汤</option>
+                        <option value="4">米饭盖饭</option>
+                        <option value="5">饮品酒水</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">是否特色菜</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="isSpecialty" value="Y" title="是">
+                    <input type="radio" name="isSpecialty" value="N" title="否" checked>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="alter" id="btn-save">保存修改</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
 </body>
 </html>

@@ -190,7 +190,6 @@ public class CuisineDaoImpl implements CuisineDao {
                 "`description`=?,\n" +
                 "`image`=?,\n" +
                 "`price`=?,\n" +
-                "`putaway`=?,\n" +
                 "`categoryId`=?,\n" +
                 "`isSpecialty`=?\n" +
                 "WHERE `cid`=?";
@@ -199,7 +198,6 @@ public class CuisineDaoImpl implements CuisineDao {
                 cuisine.getDescription(),
                 cuisine.getImage(),
                 cuisine.getPrice(),
-                cuisine.getPutaway(),
                 cuisine.getCategoryId(),
                 cuisine.getIsSpecialty(),
                 cuisine.getCid());

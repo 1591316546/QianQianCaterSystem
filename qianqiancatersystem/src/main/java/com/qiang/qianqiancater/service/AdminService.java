@@ -10,7 +10,7 @@ public class AdminService {
     AdminDao adminDao = new AdminDao();
 
     /**
-     * 检查能否登录
+     * 登录验证
      * @param username
      * @param password
      * @return
