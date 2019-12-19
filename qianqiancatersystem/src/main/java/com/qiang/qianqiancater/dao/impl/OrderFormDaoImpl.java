@@ -1,8 +1,12 @@
 package com.qiang.qianqiancater.dao.impl;
 
+import com.qiang.qianqiancater.bean.Cuisine;
 import com.qiang.qianqiancater.bean.OrderForm;
 import com.qiang.qianqiancater.bean.OrderItem;
+import com.qiang.qianqiancater.bean.User;
+import com.qiang.qianqiancater.dao.CuisineDao;
 import com.qiang.qianqiancater.dao.OrderFormDao;
+import com.qiang.qianqiancater.dao.UserDAO;
 import com.qiang.qianqiancater.utils.JDBCUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
@@ -14,6 +18,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,7 +27,10 @@ import java.util.List;
 public class OrderFormDaoImpl implements OrderFormDao {
 
     QueryRunner queryRunnerG = new QueryRunner(JDBCUtils.getDataSource());
+    UserDAO userDAO = new UserDAOImpl();
+    CuisineDao dao = new CuisineDaoImpl();
 
+    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//转换date类型为字符串以存入数据库
     /**
      * 保存订单
      *
@@ -35,7 +43,6 @@ public class OrderFormDaoImpl implements OrderFormDao {
         QueryRunner queryRunner = new QueryRunner();
         String sql = "INSERT INTO t_orderform(`oid`,`totalMoney`,`status`,`name`,`address`,`phone`,`remark`,`orderTime`,`uid`)\n" +
                 "VALUES(?,?,?,?,?,?,?,?,?)";
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//转换date类型为字符串以存入数据库
         int result = queryRunner.update(conn, sql,
                 orderForm.getOid(),
                 orderForm.getTotalMoney(),
@@ -75,7 +82,13 @@ public class OrderFormDaoImpl implements OrderFormDao {
     public List<OrderItem> getAllOrderItems(String oid) throws SQLException {
         String sql = "SELECT `itemId`,`cid`,`count`,`subtotal`\n" +
                 "FROM t_orderitem WHERE oid =?";
-        return queryRunnerG.query(sql, new BeanListHandler<OrderItem>(OrderItem.class), oid);
+        List<OrderItem> orderItems = queryRunnerG.query(sql, new BeanListHandler<OrderItem>(OrderItem.class), oid);
+        //查询并填充每一个订单项中的菜品
+        for (OrderItem item : orderItems){
+            Cuisine cuisine = dao.getCuisineById(item.getCid());
+            item.setCuisine(cuisine);
+        }
+        return orderItems;
     }
 
     /**
@@ -99,7 +112,6 @@ public class OrderFormDaoImpl implements OrderFormDao {
                 "`finishTime`=?\n" +
                 "WHERE `oid`=?";
         QueryRunner queryRunner = new QueryRunner();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//转换date类型为字符串以存入数据库
         int result = queryRunner.update(conn, sql,
                 orderForm.getTotalMoney(),
                 orderForm.getStatus(),
@@ -126,6 +138,8 @@ public class OrderFormDaoImpl implements OrderFormDao {
                 "FROM t_orderform\n" +
                 "WHERE oid=?";
         OrderForm orderForm = queryRunnerG.query(sql, new BeanHandler<OrderForm>(OrderForm.class), oid);
+        //填充
+        fillUserAndOrderItemInfo(orderForm);
         return orderForm;
     }
 
@@ -138,7 +152,7 @@ public class OrderFormDaoImpl implements OrderFormDao {
      * @return
      */
     @Override
-    public List<OrderForm> getAll(Integer userId, Integer status) throws SQLException {
+    public List<OrderForm> getAllOfStatus(Integer userId, Integer status) throws SQLException {
         String sql = "SELECT `oid`,`totalMoney`,`status`,`name`,`address`,`phone`,`remark`,`orderTime`,`uid`,`payTime`,`finishTime`\n" +
                 "FROM t_orderform\n" +
                 "WHERE 1=1";
@@ -157,6 +171,11 @@ public class OrderFormDaoImpl implements OrderFormDao {
         sql = sb.toString();
 
         List<OrderForm> orderFormList = queryRunnerG.query(sql, new BeanListHandler<OrderForm>(OrderForm.class), params.toArray());
+
+        //填充订单项和用户信息
+        for (OrderForm orderForm :orderFormList){
+            fillUserAndOrderItemInfo(orderForm);
+        }
         return orderFormList;
     }
 
@@ -176,6 +195,10 @@ public class OrderFormDaoImpl implements OrderFormDao {
                 "ORDER BY orderTime DESC LIMIT ?,?";
         List<OrderForm> orderFormList = queryRunnerG.query(sql, new BeanListHandler<OrderForm>(OrderForm.class),
                 userId, (currentPage - 1) * pageSize, pageSize);
+        //填充订单项和用户信息
+        for (OrderForm orderForm :orderFormList){
+            fillUserAndOrderItemInfo(orderForm);
+        }
         return orderFormList;
     }
 
@@ -186,22 +209,73 @@ public class OrderFormDaoImpl implements OrderFormDao {
      * @return
      */
     @Override
-    public Long countOrderForm(Integer userId) throws SQLException {
+    public Long countOrderSomeone(Integer userId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM t_orderform WHERE uid = ?";
         Long count = queryRunnerG.query(sql, new ScalarHandler<Long>(), userId);
         return count;
     }
 
-
     /**
      * 获取某种状态的全部订单
+     *
+     * @param status
+     * @param pageSize
+     * @param currentPage
+     * @return
+     */
+    @Override
+    public List<OrderForm> getAllOfStatus(Integer status, int pageSize, int currentPage) throws SQLException {
+        String sql = "SELECT `oid`,`totalMoney`,`status`,`name`,`address`,`phone`,`remark`,`orderTime`,`uid`,`payTime`,`finishTime`\n" +
+                "FROM t_orderform \n" +
+                "WHERE `status`=?\n" +
+                "ORDER BY `payTime`\n" +
+                "LIMIT ?,?";
+        List<OrderForm> orderFormList = queryRunnerG.query(sql, new BeanListHandler<OrderForm>(OrderForm.class), status, (currentPage - 1) * pageSize, pageSize);
+        //填充订单项和用户信息
+        for (OrderForm orderForm :orderFormList){
+            fillUserAndOrderItemInfo(orderForm);
+        }
+        return orderFormList;
+    }
+
+    /**
+     * 某种状态的订单总数
      *
      * @param status
      * @return
      */
     @Override
-    public List<OrderForm> getAll(Integer status) throws SQLException {
-        List<OrderForm> orderFormList = getAll(null, status);
-        return orderFormList;
+    public Long countOrderStatus(Integer status) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM t_orderform WHERE `status`=?";
+        Long query = queryRunnerG.query(sql, new ScalarHandler<Long>(),status);
+        return query;
+    }
+
+    /**
+     * 统计某状态最新订单的个数
+     *
+     * @param status
+     * @param timestamp
+     * @return
+     */
+    @Override
+    public Long countNewOrderStatus(int status, long timestamp) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM t_orderform WHERE `status` = ? AND `payTime` > ?";
+        Long count = queryRunnerG.query(sql, new ScalarHandler<Long>(), status, dateFormat.format(new Date(timestamp)));
+        return count;
+    }
+
+    /**
+     * 填充订单的每一个子项 和 下单用户信息
+     * @param orderForm
+     * @throws SQLException
+     */
+    private void fillUserAndOrderItemInfo(OrderForm orderForm) throws SQLException {
+        //填充订单的每一项
+        List<OrderItem> allOrderItems = getAllOrderItems(orderForm.getOid());
+        orderForm.setOrderItemList(allOrderItems);
+        //用户信息
+        User user = userDAO.getUserByUserId(orderForm.getUid());
+        orderForm.setUser(user);
     }
 }

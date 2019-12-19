@@ -1,6 +1,8 @@
 package com.qiang.qianqiancater.dao.impl;
 
+import com.qiang.qianqiancater.bean.Category;
 import com.qiang.qianqiancater.bean.Cuisine;
+import com.qiang.qianqiancater.dao.CategoryDao;
 import com.qiang.qianqiancater.dao.CuisineDao;
 import com.qiang.qianqiancater.utils.JDBCUtils;
 import org.apache.commons.dbutils.QueryRunner;
@@ -19,6 +21,7 @@ import java.util.List;
 public class CuisineDaoImpl implements CuisineDao {
 
     QueryRunner queryRunner = new QueryRunner(JDBCUtils.getDataSource());
+    CategoryDao categoryDao = new CategoryDaoImpl();
 
     /**
      * 根据类别查询指定页的菜品数据。
@@ -36,6 +39,7 @@ public class CuisineDaoImpl implements CuisineDao {
                 "LIMIT ?,?";
         List<Cuisine> cuisines = queryRunner.query(sql, new BeanListHandler<Cuisine>(Cuisine.class),
                 categoryId, (currentPage - 1) * pageSize, pageSize);
+
         return cuisines;
     }
 
@@ -91,6 +95,8 @@ public class CuisineDaoImpl implements CuisineDao {
                 "FROM t_cuisine\n" +
                 "WHERE cid = ?";
         Cuisine cuisine = queryRunner.query(sql, new BeanHandler<Cuisine>(Cuisine.class), cid);
+        //添加菜品的分类信息
+        fillCategoryInfo(cuisine);
         return cuisine;
     }
 
@@ -226,5 +232,12 @@ public class CuisineDaoImpl implements CuisineDao {
     public void delete(int cid) throws SQLException {
         String sql = "delete from t_cuisine WHERE cid =?";
         queryRunner.update(sql,  cid);
+    }
+
+    //填充菜品的分类信息
+    private void fillCategoryInfo(Cuisine cuisine) throws SQLException {
+        //根据分类ID获取菜品的类别信息
+        Category category = categoryDao.getCategoryById(cuisine.getCategoryId());
+        cuisine.setCategory(category);
     }
 }

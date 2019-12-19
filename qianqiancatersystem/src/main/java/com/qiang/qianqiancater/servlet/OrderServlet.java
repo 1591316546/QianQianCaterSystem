@@ -6,13 +6,10 @@ import com.qiang.qianqiancater.service.CuisineService;
 import com.qiang.qianqiancater.service.OrderService;
 import com.qiang.qianqiancater.service.impl.CuisineServiceImpl;
 import com.qiang.qianqiancater.service.impl.OrderFormServiceImpl;
-import com.qiang.qianqiancater.utils.Msg;
-import org.omg.CORBA.INTERNAL;
-import org.omg.CORBA.Request;
+import com.qiang.qianqiancater.bean.Msg;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -138,7 +135,7 @@ public class OrderServlet extends BaseServlet {
     }
 
     /**
-     * 显示订单数据
+     * 显示某人订单数据 (用户部分)
      */
     public void getOrderFromList(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = (User) request.getSession().getAttribute("user");
@@ -177,8 +174,126 @@ public class OrderServlet extends BaseServlet {
         }
     }
 
+    /**
+     * 获得某种状态的订单 （管理端）
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    public void getOrderByStatus(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String statusStr = request.getParameter("status");
+        String curr = request.getParameter("page");//当前页
+        String limit = request.getParameter("limit");//每页数据条数
+        int status;
+        int currentPage;
+        int pageSize;
+        try {
+            status = Integer.parseInt(statusStr);
+            currentPage = Integer.parseInt(curr);
+            pageSize = Integer.parseInt(limit);
+        } catch (NumberFormatException e) {
+            responseMsg(DataMsg.fail("参数异常"),response);
+            return;
+        }
 
+        PageBean<OrderForm> orderPageBean = orderService.getOrderFormOfStatusPageBean(status, pageSize, currentPage);
+        if (orderPageBean.getTotalRecords() <= 0){
+            responseMsg(DataMsg.fail("当前没有订单"),response);
+        }else {
+            responseMsg(DataMsg.success(orderPageBean.getTotalRecords(), orderPageBean.getDataList()), response);
+        }
+    }
 
+    /**
+     * 接受订单 （管理端）
+     */
+    public void acceptOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String[] oids = request.getParameterValues("oid");
+        boolean flag= true;
+        for (String oid :oids){
+            flag = orderService.acceptOrder(oid);
+        }
+        if (flag) {
+            responseMsg(Msg.success(), response);
+        }else {
+            responseMsg(Msg.fail(),response);
+        }
+    }
+
+    /**
+     * 拒绝订单
+     */
+    public void rejectOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String[] oids = request.getParameterValues("oid");
+        boolean flag= true;
+        for (String oid :oids){
+            flag = orderService.rejectOrder(oid);
+        }
+        if (flag) {
+            responseMsg(Msg.success(), response);
+        }else {
+            responseMsg(Msg.fail(),response);
+        }
+    }
+
+    /**
+     * 完成订单
+     */
+    public void finshOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String[] oids = request.getParameterValues("oid");
+        boolean flag= true;
+        for (String oid :oids){
+            flag = orderService.orderFinish(oid);
+        }
+        if (flag) {
+            responseMsg(Msg.success(), response);
+        }else {
+            responseMsg(Msg.fail(),response);
+        }
+    }
+
+    /**
+     * 询问某种状态的订单是否有新订单 根据最后一条记录时间戳
+     */
+//    public void haveNewOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        String statusStr = request.getParameter("status");
+//        String timestampStr = request.getParameter("timestamp");
+//        int status = -1;
+//        long timestamp = 0L;
+//        try {
+//            status = Integer.parseInt(statusStr);
+//            timestamp = Long.parseLong(timestampStr);
+//        } catch (NumberFormatException e) {
+//            e.printStackTrace();
+//        }
+//        boolean b = orderService.haveNewOrder(status,timestamp);
+//        if (b){
+//            responseMsg(Msg.success(),response);
+//        }else {
+//            responseMsg(Msg.fail(),response);
+//        }
+//    }
+
+    /**
+     * 通过记录数的改变获知有无新订单
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    public void haveNewOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String statusStr = request.getParameter("status");
+//        String timestampStr = request.getParameter("timestamp");
+        int status = -1;
+        try {
+            status = Integer.parseInt(statusStr);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        int count = (int) orderService.haveNewOrder(status);
+
+        responseMsg(Msg.success().add("count",count),response);
+
+    }
 
         /**
          * 获取session中的菜篮子,没有就new一个放进去

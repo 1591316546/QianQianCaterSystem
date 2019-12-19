@@ -21,6 +21,10 @@ import java.util.List;
  * @author QIANG
  */
 public class OrderFormServiceImpl implements OrderService {
+
+    OrderFormDao orderFormDao = new OrderFormDaoImpl();
+
+
     /**
      * 保存订单
      *
@@ -64,23 +68,43 @@ public class OrderFormServiceImpl implements OrderService {
      */
     @Override
     public PageBean<OrderForm> getOrderFormPageBean(User user, int pageSize, int currentPage) {
-        OrderFormDao orderFormDao = new OrderFormDaoImpl();
-        CuisineDao cuisineDao = new CuisineDaoImpl();
+
         PageBean<OrderForm> pageBean = new PageBean<>();
         try {
             //总记录数
-            long count = orderFormDao.countOrderForm(user.getUserId());
+            long count = orderFormDao.countOrderSomeone(user.getUserId());
             //订单列表
             List<OrderForm> orderFormList = orderFormDao.getAllofSomeone(user.getUserId(), pageSize, currentPage);
-            //填充每一条订单的子项
-            for (OrderForm orderForm : orderFormList) {
-                List<OrderItem> allOrderItems = orderFormDao.getAllOrderItems(orderForm.getOid());
-                //填充每一个订单项中的菜品信息
-                for (OrderItem oi : allOrderItems) {
-                    oi.setCuisine(cuisineDao.getCuisineById(oi.getCid()));
-                }
-                orderForm.setOrderItemList(allOrderItems);
-            }
+            //计算总页数
+            int totalPages = (int) ((count % pageSize == 0) ? (count / pageSize) : (count / pageSize + 1));
+            //封装到 PageBean
+            pageBean.setTotalRecords((int) count);
+            pageBean.setTotalPages(totalPages);
+            pageBean.setPageSize(pageSize);
+            pageBean.setCurrentPage(currentPage);
+            pageBean.setDataList(orderFormList);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return pageBean;
+    }
+
+    /**
+     * 查询一个状态的全部订单 封装到页中展示
+     *
+     * @param status
+     * @param pageSize
+     * @param currentPage
+     * @return
+     */
+    @Override
+    public PageBean<OrderForm> getOrderFormOfStatusPageBean(int status, int pageSize, int currentPage) {
+        PageBean<OrderForm> pageBean = new PageBean<>();
+        try {
+            //总记录数
+            long count = orderFormDao.countOrderStatus(status);
+            //订单列表
+            List<OrderForm> orderFormList = orderFormDao.getAllOfStatus(status, pageSize, currentPage);
             //计算总页数
             int totalPages = (int) ((count % pageSize == 0) ? (count / pageSize) : (count / pageSize + 1));
             //封装到 PageBean
@@ -124,5 +148,107 @@ public class OrderFormServiceImpl implements OrderService {
             }
         }
         return false;
+    }
+
+    /**
+     * 接单，修改订单的状态
+     *
+     * @param oid
+     * @return
+     */
+    @Override
+    public boolean acceptOrder(String oid) {
+        OrderFormDao orderFormDao = new OrderFormDaoImpl();
+        Connection conn = null;
+        try {
+            conn = JDBCUtils.getConnection();
+            OrderForm orderForm = orderFormDao.getOrderFormById(oid);
+            if (orderForm != null) {
+                orderForm.setStatus(Constant.ORDER_JIEDAN);//设置为接单
+                int i = orderFormDao.updateOrderForm(conn, orderForm);
+                if (i == 1){//修改行数为1表示修改成功
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.close(null, conn);
+        }
+        return false;
+    }
+
+    /**
+     * 退单，修改订单的状态
+     *
+     * @param oid
+     * @return
+     */
+    @Override
+    public boolean rejectOrder(String oid) {
+        OrderFormDao orderFormDao = new OrderFormDaoImpl();
+        Connection conn = null;
+        try {
+            conn = JDBCUtils.getConnection();
+            OrderForm orderForm = orderFormDao.getOrderFormById(oid);
+            if (orderForm != null) {
+                orderForm.setStatus(Constant.ORDER_TUIKUAN);//设置为退单
+                int i = orderFormDao.updateOrderForm(conn, orderForm);
+                if (i == 1){//修改行数为1表示修改成功
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.close(null, conn);
+        }
+        return false;
+    }
+
+    /**
+     * 订单完成，修改订单的状态
+     *
+     * @param oid
+     * @return
+     */
+    @Override
+    public boolean orderFinish(String oid) {
+        OrderFormDao orderFormDao = new OrderFormDaoImpl();
+        Connection conn = null;
+        try {
+            conn = JDBCUtils.getConnection();
+            OrderForm orderForm = orderFormDao.getOrderFormById(oid);
+            if (orderForm != null) {
+                orderForm.setStatus(Constant.ORDER_WANCHENG);//设置为已付款
+                orderForm.setFinishTime(new Date());//设置付款时间
+                int i = orderFormDao.updateOrderForm(conn, orderForm);
+                if (i == 1){//修改行数为1表示修改成功
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.close(null, conn);
+        }
+        return false;
+    }
+
+    /**
+     * 查询某状态的订单有没有新的
+     *
+     * @param status
+     * @return
+     */
+    @Override
+    public long haveNewOrder(int status) {
+        long count = 0L;
+        try {
+            count = orderFormDao.countOrderStatus(status);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
     }
 }

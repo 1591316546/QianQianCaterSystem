@@ -31,6 +31,22 @@ public class UserDAOImpl implements UserDAO {
         return user;
     }
 
+    /**
+     * 根据用户名查找一个用户对象
+     *
+     * @param id
+     */
+    @Override
+    public User getUserByUserId(int id) {
+        String sql = "SELECT "+columnStrQuery+" FROM tab_user WHERE user_id=?";
+        User user = null;
+        try {
+            user = (User) template.queryForObject(sql, new BeanPropertyRowMapper<User>(User.class),id);
+        } catch (DataAccessException e) {
+        }
+        return user;
+    }
+
     @Override
     public int saveUser(User user) {
         String sql = "insert into tab_user("+columnStr+") values(?,?,?,?,?,?,?,?,?,?)";

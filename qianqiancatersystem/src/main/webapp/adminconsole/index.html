@@ -14,9 +14,9 @@
 	<body class="layui-layout-body">
 		<div class="layui-layout layui-layout-admin">
 			<div class="layui-header">
-				<div class="layui-logo">千乾餐饮</div>
+				<div class="layui-logo">千乾餐饮·后台管理系统</div>
 				<!-- 头部区域（可配合layui已有的水平导航） -->
-				<!-- <ul class="layui-nav layui-layout-left">
+				 <!--<ul class="layui-nav layui-layout-left">
 					<li class="layui-nav-item"><a href="index.html">控制台</a></li>
 					<li class="layui-nav-item"><a href="javascript:;">系统设置</a></li>
 					<li class="layui-nav-item">
@@ -27,7 +27,7 @@
 							<dd><a href="">授权管理</a></dd>
 						</dl>
 					</li>
-				</ul> -->
+				</ul>-->
 				<ul class="layui-nav layui-layout-right">
 					<li class="layui-nav-item">
 						<a id="a-username" href="javascript:;">请登录</a>
@@ -55,12 +55,21 @@
 							</dl>
 						</li>
 						<li class="layui-nav-item">
-							<a href="javascript:;">订单管理</a>
+							<a href="javascript:;">餐台管理</a>
 							<dl class="layui-nav-child">
-								<dd><a href="javascript:;">未支付</a></dd>
-								<dd><a href="javascript:;">已支付</a></dd>
-								<dd><a href="javascript:;">已接单</a></dd>
-								<dd><a href="javascript:;">已完成</a></dd>
+								<dd><a href="javascript:;">顾客开单</a></dd>
+								<dd><a href="javascript:;">更换餐台</a></dd>
+								<dd><a href="javascript:;">增加消费</a></dd>
+								<dd><a href="javascript:;">收银结账</a></dd>
+							</dl>
+						</li>
+						<li class="layui-nav-item">
+							<a href="javascript:;">外卖订单</a>
+							<dl class="layui-nav-child">
+								<dd><a href="javascript:;" targetPage="order_yifukuan.html">已支付</a></dd>
+								<dd><a href="javascript:;" targetPage="order_yijiedan.html">已接单</a></dd>
+								<dd><a href="javascript:;" targetPage="order_yiwancheng.html">已完成</a></dd>
+								<dd><a href="javascript:;" targetPage="order_yituikuan.html">已退款</a></dd>
 							</dl>
 						</li>
 						<li class="layui-nav-item">
@@ -71,6 +80,15 @@
 							</dl>
 						</li>
 						<li class="layui-nav-item">
+							<a class="" href="javascript:;">员工管理</a>
+							<dl class="layui-nav-child">
+								<dd><a href="javascript:;">员工列表</a></dd>
+								<dd><a href="javascript:;">奖惩记录</a></dd>
+								<dd><a href="javascript:;">考勤管理</a></dd>
+								<dd><a href="javascript:;">排班管理</a></dd>
+							</dl>
+						</li>
+						<li class="layui-nav-item">
 							<a href="javascript:;">预定信息</a>
 							<dl class="layui-nav-child">
 								<dd><a href="javascript:;">宴席预定</a></dd>
@@ -78,7 +96,6 @@
 							</dl>
 						</li>
 						<li class="layui-nav-item"><a href="javascript:;">厨房管理</a></li>
-						<li class="layui-nav-item"><a href="javascript:;">仓库管理</a></li>
 					</ul>
 				</div>
 			</div>
@@ -120,7 +137,7 @@
 
 			});
 			
-			//为左侧的每一个功能项绑定事件
+			//为左侧的每一个功能项绑定事件 跳转对应的页面
 			$("#left-side a").on('click',function(){
 				var targerPage = $(this).attr("targetPage");
 				if(targerPage != undefined){

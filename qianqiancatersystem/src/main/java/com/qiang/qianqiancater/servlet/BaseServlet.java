@@ -1,10 +1,10 @@
 package com.qiang.qianqiancater.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.qiang.qianqiancater.utils.Msg;
+import com.qiang.qianqiancater.bean.DataMsg;
+import com.qiang.qianqiancater.bean.Msg;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -64,6 +64,15 @@ public class BaseServlet extends HttpServlet {
     protected void responseMsg(Msg msg,HttpServletResponse response) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonMsg = objectMapper.writeValueAsString(msg);
+
+        response.setContentType("application/json;charset=utf-8");
+        response.getWriter().write(jsonMsg);
+    }
+
+    //抽取响应客户端的方法 3  返回另一种 消息结构
+    protected void responseMsg(DataMsg dataMsg, HttpServletResponse response) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonMsg = objectMapper.writeValueAsString(dataMsg);
 
         response.setContentType("application/json;charset=utf-8");
         response.getWriter().write(jsonMsg);

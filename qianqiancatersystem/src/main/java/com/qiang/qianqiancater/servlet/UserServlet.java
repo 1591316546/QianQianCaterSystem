@@ -1,17 +1,13 @@
 package com.qiang.qianqiancater.servlet;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qiang.qianqiancater.bean.User;
 import com.qiang.qianqiancater.service.UserService;
 import com.qiang.qianqiancater.service.impl.UserServiceImpl;
-import com.qiang.qianqiancater.utils.Msg;
+import com.qiang.qianqiancater.bean.Msg;
 import org.apache.commons.beanutils.BeanUtils;
 
-import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

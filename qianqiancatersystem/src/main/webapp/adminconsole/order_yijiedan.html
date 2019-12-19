@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <script src="../js/jquery-1.12.4.min.js"></script>
+    <script src="layui/layui.js"></script>
+    <title>已接单需要配送的订单</title>
+
+    <style>
+        body {
+            /*background-color: #f2f2f2;*/
+            padding-top: 15px;
+        }
+        h2{
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <h2>已接单需要配送的订单</h2>
+        </div>
+    </div>
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <!--数据表格-->
+            <table id="table-order" lay-filter="order"></table>
+        </div>
+    </div>
+</div>
+
+<!--表格每一行操作按钮-->
+<script type="text/html" id="editBtn">
+    <a class="layui-btn layui-btn-xs" lay-event="check">查看</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="finish">配送完成</a>
+</script>
+
+<!--解析时间的js-->
+<script>
+    //对日期类扩展使其能格式化日期
+    Date.prototype.format = function (fmt) {
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) {
+            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        }
+        for (var k in o) {
+            if (new RegExp("(" + k + ")").test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ?
+                    (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            }
+        }
+        return fmt;
+    }
+</script>
+<!--页面主要js-->
+<script>
+
+    layui.use(['table','layer'], function () {
+        var table = layui.table;
+
+        var tableObj = table.render({
+            elem: '#table-order'
+            ,url: '../order/getOrderByStatus' //数据接口
+            ,where:{"status":2}
+            ,defaultToolbar: ['filter']
+            ,title: '已接单需配送的订单'
+            ,page: true //开启分页
+            ,cols: [[ //表头
+                {field: 'oid', title: '订单号', width:100}
+                ,{field: 'totalMoney', title: '总金额', width:80}
+                ,{field: 'name', title: '姓名', width:80}
+                ,{field: 'address', title: '配送地址',minWidth:200}
+                ,{field: 'phone', title: '电话', width: 120}
+                ,{field: 'remark', title: '备注', minWidth: 200}
+                // ,{field: 'orderTime', title: '下单时间', width: 80, sort: true}
+                ,{title: '付款时间', width: 200,templet: function(d){
+                        return new Date(d.payTime).format("yyyy-MM-dd hh:mm:ss");
+                    }}
+                ,{title: '下单者', width: 80,templet: function (d) {
+                        return d.user.username;
+                    }}
+                ,{fixed: 'right', title:'操作', toolbar: '#editBtn', width:150}
+            ]]
+            ,id:'orderTable'
+            // ,height: 'full-86'
+        });
+
+        //监听每一行工具事件
+        table.on('tool(order)', function(obj){
+            var data = obj.data;
+            // console.log(obj);
+            if(obj.event === 'check'){
+                //弹出查看详情的框
+                showDetail(obj.data);
+            } else if(obj.event === 'finish'){
+                var oids = [];
+                oids[0] = obj.data.oid;
+                //完成订单
+                finishOrder(oids);
+            }
+        });
+
+        //完成订单
+        function finishOrder(oids) {
+            var oidPramStr = '';
+            for(var i = 0 ;i<oids.length;i++){
+                oidPramStr += "oid=" + oids[i] + '&';
+            }
+            oidPramStr = oidPramStr.substring(0, oidPramStr.length-1);
+            $.ajax({
+                url:"../order/finshOrder",
+                data:oidPramStr,
+                success:function (result) {
+                    if (result.code== 100){
+                        //表格重载
+                        table.reload('orderTable');
+                        //页面记录的单数-1
+                        orderCount -= 1;
+                    }
+                }
+            });
+        }
+
+        // console.log(tableObj);
+        //记录订单数量，用于检查有无新订单
+        var orderCount = 0;
+        $.get("../order/haveNewOrder",{"status":2},function (result) {
+            orderCount = result.extend.count;
+        });
+        //定时检查有无新纪录，刷新表格数据
+        var timer = setInterval(function () {
+            //发送请求查询是否有新数据
+            $.get("../order/haveNewOrder",{"status":2},function (result) {
+                if (result.code == 100 ){
+                    //订单数量变化，刷新表格
+                    if (result.extend.count != orderCount){
+                        orderCount = result.extend.count;
+                        //有新数据 表格重载
+                        table.reload('orderTable');
+                    }
+                }else {
+                    console.log("查询新数据出错!");
+                }
+            });
+        },3000);
+
+        //弹出详情框
+        function showDetail(data) {
+            layer.open({
+                type:1,
+                title:'订单详情',
+                content:$("#order-detail"),
+                area: ['700px', '600px'],
+                shadeClose:true,//点击遮罩关闭
+                // maxmin:true
+            });
+            //填充弹窗内容 订单细节
+            $("#oid").html(data.oid);
+
+            $("#status").html('已接单待配送');
+            $("#user").html(data.user.username);
+            $("#orderTime").html(new Date(data.orderTime).format('yyyy-MM-dd hh:mm:ss'));
+            $("#totalMoney").html(data.totalMoney);
+            $("#payTime").html(new Date(data.payTime).format('yyyy-MM-dd hh:mm:ss'));
+            $("#name").html(data.name);
+            $("#phone").html(data.phone);
+            $("#address").html(data.address);
+            $("#remark").html(data.remark);
+            //菜品信息
+            var trStr = '';
+            for (var i=0;i<data.orderItemList.length;i++){
+                var cuisine = data.orderItemList[i].cuisine;
+                trStr += '<tr>\n' +
+                    '    <td>'+ cuisine.cname +'</td>\n' +
+                    '    <td>'+ cuisine.price +'</td>\n' +
+                    '    <td>'+ data.orderItemList[i].count +'</td>\n' +
+                    '    <td>'+ data.orderItemList[i].subtotal+ '</td>\n' +
+                    '</tr>';
+            }
+            $("#cuisine-list").html(trStr);
+        }
+    });
+</script>
+<!--弹出框-->
+<div id="order-detail" style="padding:10px;display: none;">
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>订单信息</legend>
+        <div class="layui-field-box">
+            <table class="layui-table">
+                <tr>
+                    <td>订单号：</td>
+                    <td id="oid">afadsfsadgdag-afasdf-adfa</td>
+                    <td>订单状态：</td>
+                    <td id="status">已付款</td>
+                </tr>
+                <tr>
+                    <td>下单者：</td>
+                    <td id="user">qiang</td>
+                    <td>下单时间：</td>
+                    <td id="orderTime">2019-12-12 00:00:00</td>
+                </tr>
+                <tr>
+                    <td>总金额：</td>
+                    <td id="totalMoney">123</td>
+                    <td>付款时间：</td>
+                    <td id="payTime">2019-12-12 00:00:00</td>
+                </tr>
+            </table>
+        </div>
+    </fieldset>
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>配送信息</legend>
+        <div class="layui-field-box">
+            <table class="layui-table">
+                <tr>
+                    <td>收货人姓名：</td>
+                    <td id="name">张三</td>
+                    <td>电话：</td>
+                    <td id="phone">12345612345</td>
+                </tr>
+                <tr>
+                    <td>配送地址：</td>
+                    <td colspan="3" id="address">河南科技大学</td>
+                </tr>
+                <tr>
+                    <td>备注：</td>
+                    <td colspan="3" id="remark">不要辣</td>
+                </tr>
+            </table>
+        </div>
+    </fieldset>
+    <fieldset class="layui-elem-field  layui-field-title">
+        <legend>菜品信息</legend>
+        <div class="layui-field-box">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th>菜品名称</th>
+                    <th>单价</th>
+                    <th>数量</th>
+                    <th>小计</th>
+                </tr>
+                </thead>
+                <tbody id="cuisine-list">
+                </tbody>
+            </table>
+        </div>
+    </fieldset>
+</div>
+</body>
+</html>

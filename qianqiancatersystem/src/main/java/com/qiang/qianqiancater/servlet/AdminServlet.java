@@ -2,12 +2,9 @@ package com.qiang.qianqiancater.servlet;
 
 import com.qiang.qianqiancater.bean.Admin;
 import com.qiang.qianqiancater.service.AdminService;
-import com.qiang.qianqiancater.servlet.BaseServlet;
-import com.qiang.qianqiancater.utils.Msg;
+import com.qiang.qianqiancater.bean.Msg;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

@@ -13,6 +13,12 @@ public interface UserDAO {
     User getUserByUsername(String username);
 
     /**
+     * 根据用户名查找一个用户对象
+     * @param id
+     */
+    User getUserByUserId(int id);
+
+    /**
      * 保存用户对象
      * @param user
      * @return

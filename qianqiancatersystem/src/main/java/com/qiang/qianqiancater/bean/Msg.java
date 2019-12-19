@@ -1,4 +1,4 @@
-package com.qiang.qianqiancater.utils;
+package com.qiang.qianqiancater.bean;
 
 import java.util.HashMap;
 import java.util.Map;

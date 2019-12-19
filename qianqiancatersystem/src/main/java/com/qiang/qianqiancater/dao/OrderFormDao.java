@@ -53,7 +53,7 @@ public interface OrderFormDao {
      * @param status
      * @return
      */
-    List<OrderForm> getAll(Integer userId, Integer status) throws SQLException;
+    List<OrderForm> getAllOfStatus(Integer userId, Integer status) throws SQLException;
 
     /**
      * 获取某人所有记录 带分页功能
@@ -67,12 +67,27 @@ public interface OrderFormDao {
      * @param userId
      * @return
      */
-    Long countOrderForm(Integer userId) throws SQLException;
+    Long countOrderSomeone(Integer userId) throws SQLException;
 
     /**
      * 获取某种状态的全部订单
      * @param status
      * @return
      */
-    List<OrderForm> getAll(Integer status) throws SQLException;
+    List<OrderForm> getAllOfStatus(Integer status, int pageSize, int currentPage) throws SQLException;
+
+    /**
+     * 某种状态的订单总数
+     * @param status
+     * @return
+     */
+    Long countOrderStatus(Integer status) throws SQLException;
+
+    /**
+     * 统计某状态最新订单的个数
+     * @param status
+     * @param timestamp
+     * @return
+     */
+    Long countNewOrderStatus(int status, long timestamp) throws SQLException;
 }
