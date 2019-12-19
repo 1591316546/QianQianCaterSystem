@@ -31,18 +31,13 @@ import java.util.Map;
 @WebServlet("/cuisine/*")
 public class CuisineServlet extends BaseServlet {
 
-    CuisineService cuisineService = new CuisineServiceImpl();
+    private CuisineService cuisineService = new CuisineServiceImpl();
 
     /**
      * 根据类别id获取商品列表
      * 通过json返回一个分页对象
-     *
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
      */
-    public void getCuisineByCategory(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void getCuisineByCategory(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String categoryIdStr = request.getParameter("categoryId");
         String pageSizeStr = request.getParameter("pageSize");
         String currentPageStr = request.getParameter("currentPage");
@@ -59,11 +54,6 @@ public class CuisineServlet extends BaseServlet {
 
     /**
      * 根据ID查询菜品信息
-     *
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
      */
     public void getCuisineById(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String cidStr = request.getParameter("cid");
@@ -75,11 +65,6 @@ public class CuisineServlet extends BaseServlet {
 
     /**
      * 根据菜品ID获取大图
-     *
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
      */
     public void getCuisineBigImg(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //返回大图的路径
@@ -93,10 +78,6 @@ public class CuisineServlet extends BaseServlet {
     /**
      * 搜索菜品
      *
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
      */
     public void searchCuisines(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String cname = request.getParameter("cname");
@@ -114,11 +95,6 @@ public class CuisineServlet extends BaseServlet {
 
     /**
      * 响应特色菜列表
-     *
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
      */
     public void getSpecialCuisines(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Cuisine> cuisines = cuisineService.getSpecialtyCuisine();
@@ -141,6 +117,7 @@ public class CuisineServlet extends BaseServlet {
         try {
             currentPage = Integer.parseInt(currentPageStr);
         } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
         //获取到封装好的数据
         PageBean<Cuisine> pageBean = cuisineService.getAllCuiSines(pageSize, currentPage);

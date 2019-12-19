@@ -1,5 +1,6 @@
 package com.qiang.qianqiancater.service.impl;
 
+import com.qiang.qianqiancater.bean.DataMsg;
 import com.qiang.qianqiancater.bean.User;
 import com.qiang.qianqiancater.dao.UserDAO;
 import com.qiang.qianqiancater.dao.impl.UserDAOImpl;
@@ -8,7 +9,10 @@ import com.qiang.qianqiancater.utils.MailUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -99,5 +103,42 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByUsername(String username) {
         return userDAO.getUserByUsername(username);
+    }
+
+    /**
+     * 分页查询用户数据
+     *
+     * @param pageSize
+     * @param currentPage
+     * @return
+     */
+    @Override
+    public DataMsg getAllUsers(int pageSize, int currentPage) {
+        List<User> userList = new ArrayList<>();
+        long count = 0;
+        try {
+            userList = userDAO.getAll(pageSize, currentPage);
+            count = userDAO.countAllUser();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        DataMsg<User> dataMsg = DataMsg.success((int) count,userList);
+        return dataMsg;
+    }
+
+    /**
+     * 根据用户id设置用户账户的状态
+     *
+     * @param id
+     * @param status
+     */
+    @Override
+    public boolean setActiveStatus(int id, String status) {
+        int result = userDAO.setActiveStatus(id, status);
+        if (result == 1){
+            return true;
+        }
+        return false;
     }
 }

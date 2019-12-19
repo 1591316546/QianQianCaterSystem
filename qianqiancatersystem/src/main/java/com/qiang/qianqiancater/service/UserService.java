@@ -1,5 +1,6 @@
 package com.qiang.qianqiancater.service;
 
+import com.qiang.qianqiancater.bean.DataMsg;
 import com.qiang.qianqiancater.bean.User;
 
 /**
@@ -41,4 +42,16 @@ public interface UserService {
      * @return
      */
     User getUserByUsername(String username);
+
+    /**
+     * 分页查询用户数据
+     * @param pageSize
+     * @param currentPage
+     * @return
+     */
+    DataMsg getAllUsers(int pageSize,int currentPage);
+    /**
+     * 根据用户id设置用户账户的状态
+     */
+    boolean setActiveStatus(int id, String status);
 }

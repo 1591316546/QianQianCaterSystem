@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <script src="../js/jquery-1.12.4.min.js"></script>
+    <script src="layui/layui.js"></script>
+    <title>用户管理</title>
+
+    <style>
+        body {
+            /*background-color: #f2f2f2;*/
+            padding-top: 15px;
+        }
+        h2{
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <h2>用户管理</h2>
+        </div>
+    </div>
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <!--数据表格-->
+            <table id="table-user" lay-filter="user"></table>
+        </div>
+    </div>
+</div>
+
+<!--表格每一行操作按钮-->
+<script type="text/html" id="editBtn">
+    <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="disabled">禁用</a>
+    <a class="layui-btn layui-btn-sm" lay-event="able">启用</a>
+</script>
+
+<!--用户状态列模板-->
+<script type="text/html" id="user-status">
+    {{# if( d.activeStatus == 'D'){ }}
+        <button class="layui-btn layui-btn-xs layui-btn-primary">未激活</button>
+    {{# }else if(d.activeStatus == 'Y'){ }}
+        <button class="layui-btn layui-btn-xs">正常</button>
+    {{# }else if(d.activeStatus == 'N'){ }}
+        <button class="layui-btn layui-btn-xs layui-btn-danger">禁用</button>
+    {{# } }}
+</script>
+
+<!--解析时间的js-->
+<script>
+    //对日期类扩展使其能格式化日期
+    Date.prototype.format = function (fmt) {
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) {
+            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        }
+        for (var k in o) {
+            if (new RegExp("(" + k + ")").test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ?
+                    (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            }
+        }
+        return fmt;
+    }
+</script>
+<!--页面主要js-->
+<script>
+    layui.use(['table','layer'], function () {
+        var table = layui.table;
+
+        var tableObj = table.render({
+            elem: '#table-user'
+            ,url: '../user/getAllUsers' //数据接口
+            ,toolbar:true
+            ,defaultToolbar:  ['filter', 'print', 'exports']
+            ,title: '用户表'
+            ,page: true //开启分页
+            ,cols: [[ //表头
+                {field: 'userId', title: 'ID'}
+                ,{field: 'username', title: '用户名'}
+                ,{field: 'nickname', title: '昵称'}
+                ,{field: 'email', title: '邮箱',minWidth:180}
+                ,{field: 'gender', title: '性别',templet:function (d) {
+                        if (d.gender == 'male'){
+                            return '男';
+                        }else {
+                            return '女';
+                        }
+                    }}
+                ,{title: '注册时间',templet: function(d){
+                        return new Date(d.registrationTime).format("yyyy-MM-dd hh:mm:ss");
+                    }}
+                ,{field: 'activeStatus',title: '用户状态',align:'center',templet:"#user-status"}
+                ,{fixed: 'right', title:'操作', toolbar: '#editBtn', width:150}
+            ]]
+            ,id:'orderTable'
+        });
+
+        //监听每一行工具事件 对账户的禁用和启用
+        table.on('tool(user)', function(obj){
+            var data = obj.data;
+            // console.log(obj);
+            if(obj.event === 'disabled'){
+                layer.alert("真的禁用吗？", function (index) {
+                    $.get("../user/setActiveStatus?status=N&userId=" + data.userId, function (result) {
+                        if (result.code == 0) {
+                            //同步更新对应的值
+                            obj.update({
+                                activeStatus: 'N'
+                            });
+                        }
+                    });
+                    layer.close(index);
+                });
+            }else if(obj.event === 'able'){
+                $.get("../user/setActiveStatus?status=Y&userId="+ data.userId,function (result) {
+                    if (result.code == 0){
+                        //同步更新对应的值
+                        obj.update({
+                            activeStatus: 'Y'
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

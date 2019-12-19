@@ -4,7 +4,9 @@ import com.qiang.qianqiancater.bean.User;
 import com.qiang.qianqiancater.dao.UserDAO;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -48,6 +50,17 @@ public class UserDAOImplTest {
     @Test
     public void testSetActiveStatus(){
         int i = userDAO.setActiveStatus("6afd5973-a58b-4676-9d35-1d423c7784c51574169480982");
+        System.out.println(i);
+    }
+
+    @Test
+    public void testGetAll(){
+        List<User> i = null;
+        try {
+            i = userDAO.getAll(0,10);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         System.out.println(i);
     }
 }

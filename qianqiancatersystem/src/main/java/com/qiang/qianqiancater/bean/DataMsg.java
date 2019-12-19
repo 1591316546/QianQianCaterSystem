@@ -31,6 +31,10 @@ public class DataMsg<T> {
         return new DataMsg(0,"",count,data);
     }
 
+    public static <T> DataMsg success(String msg){
+        return new DataMsg(0,msg,0,null);
+    }
+
     public static DataMsg fail(String msg){
         return new DataMsg(-1,msg,0,null);
     }
