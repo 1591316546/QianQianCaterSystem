@@ -102,7 +102,7 @@ public class CuisineServlet extends BaseServlet {
     }
 
     /**
-     * 获取所有菜列表
+     * 获取所有菜列表（后台管理端）
      */
     public void getAllCuisines(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -127,7 +127,7 @@ public class CuisineServlet extends BaseServlet {
     }
 
     /**
-     * 添加一个菜品
+     * 添加一个菜品 （后台管理端）
      */
     public void addCuisine(HttpServletRequest request, HttpServletResponse response) throws Exception {
         //保存提交上来的菜品的参数
@@ -213,7 +213,7 @@ public class CuisineServlet extends BaseServlet {
     }
 
     /**
-     * 批量上下架
+     * 批量上下架（后台）
      */
     public void changePutaway(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String[] cid = request.getParameterValues("cid");
@@ -241,7 +241,7 @@ public class CuisineServlet extends BaseServlet {
     }
 
     /**
-     * 接收上传上来的菜品图片并存储
+     * 接收上传上来的菜品图片并存储 （后台）
      */
     public void uploadImage(HttpServletRequest request, HttpServletResponse response) throws Exception {
         DiskFileItemFactory factory = new DiskFileItemFactory();
@@ -282,7 +282,7 @@ public class CuisineServlet extends BaseServlet {
     }
 
     /**
-     * 修改菜品信息
+     * 修改菜品信息 （后台）
      */
     public void alterCuisine(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, String[]> parameterMap = request.getParameterMap();

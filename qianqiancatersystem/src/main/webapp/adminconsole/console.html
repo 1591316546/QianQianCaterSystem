@@ -2,9 +2,331 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <script src="../js/jquery-1.12.4.min.js"></script>
+    <script src="layui/layui.js"></script>
+    <script src="../js/echarts.min.js"></script>
+
     <title>千乾餐饮后台管理系统后台</title>
+    <style>
+        body {
+            background-color: #f2f2f2;
+            padding-top: 15px;
+        }
+
+        /*页面上的卡片样式*/
+        .qiang-card {
+            padding: 20px;
+            /*height: 120px;*/
+            border-radius: 3px;
+        }
+
+        /*卡片标题*/
+        .qiang-card .qiang-card-title {
+            height: 35px;
+            line-height: 35px;
+            font-size: 20px;
+            color: #6a6a6a;
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        /*标题处的小图标*/
+        .qiang-card .qiang-card-title span {
+            float: right
+        }
+
+        .qiang-card .qiang-card-body {
+            color: #6a6a6a;
+        }
+
+        /*数字*/
+        .qiang-card .qiang-card-body .qiang-card-num {
+            font-size: 40px;
+            color: #6a6a6a;
+            height: 68px;
+            line-height: 68px;
+        }
+
+        /*新订单提醒卡片*/
+        .qiang-card .qiang-card-body .qiang-new-order {
+            padding-top: 20px;
+            height: 40px;
+            line-height: 40px;
+            color: #6a6a6a;
+            font-size: 18px;
+        }
+        .qiang-chart{
+            height: 350px;
+        }
+
+        /*火灾预警卡片*/
+        .qiang-card .qiang-card-body .qiang-warning {
+            height: 140px;
+        }
+        .qiang-warning img{
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        .qiang-warning>div{
+            height: 40px;
+            line-height: 40px;
+        }
+        .qiang-warning>div>div{
+            float: right;
+        }
+
+        /*温湿度卡片*/
+        .qiang-wenshidu p{
+            padding-top: 15px;
+            font-size: 16px;
+        }
+        /*照明卡片*/
+        .qiang-zhaoming{
+            margin-top: 20px;
+        }
+        .qiang-zhaoming td{
+            padding-right: 25px;
+        }
+    </style>
 </head>
 <body>
-这是后台。
+<form class="layui-form">
+    <div class="layui-fluid">
+        <!--第一行 数据概览 展示-->
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md3 layui-col-sm6">
+                <div class="layui-card qiang-card">
+                    <div class="qiang-card-title">
+                        菜品数
+                        <span class="layui-badge layui-bg-blue">总</span>
+                    </div>
+                    <div class="qiang-card-body">
+                        <div class="qiang-card-num">
+                            99
+                        </div>
+                        <div>菜品总数</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md3 layui-col-sm6">
+                <div class="layui-card qiang-card">
+                    <div class="qiang-card-title">
+                        营收
+                        <span class="layui-badge layui-bg-black">年</span>
+                    </div>
+                    <div class="qiang-card-body">
+                        <div class="qiang-card-num">
+                            66666.66
+                        </div>
+                        <div>总营业额：<span>49426646.03</span><i class="layui-icon layui-inline layui-icon-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md3 layui-col-sm6">
+                <div class="layui-card qiang-card">
+                    <div class="qiang-card-title">
+                        用户数
+                        <span class="layui-badge layui-bg-blue">总</span>
+                    </div>
+                    <div class="qiang-card-body">
+                        <div class="qiang-card-num">
+                            6868
+                        </div>
+                        <div>用户总数</div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md3 layui-col-sm6">
+                <div class="layui-card qiang-card">
+                    <div class="qiang-card-title">
+                        已完成订单
+                        <span class="layui-badge layui-bg-green">总</span>
+                    </div>
+                    <div class="qiang-card-body">
+                        <div id="order-yiwancheng" class="qiang-card-num">
+                            45465
+                        </div>
+                        <div>订单总数</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--第二行 月度数据统计和展示  和  新订单提醒 -->
+        <div class="layui-row layui-col-space15">
+            <!--月度统计表-->
+            <div class="layui-col-md8 layui-col-sm12">
+                <div class="layui-card qiang-card">
+                    <div class="qiang-card-title">
+                        月度营收统计表
+                    </div>
+                    <div class="qiang-card-body">
+                        <div class="qiang-chart" id="echarts">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--新订单提醒 和 火灾预警-->
+            <div class="layui-col-md4 layui-col-sm12">
+                <div class="layui-card qiang-card">
+                    <div class="qiang-card-title">
+                        新订单提醒
+                        <span class="layui-badge layui-bg-red">新</span>
+                    </div>
+                    <div class="qiang-card-body">
+                        <div class="qiang-new-order">
+                            待处理订单数：
+                            <span id="order-yifukuan">8</span>
+                        </div>
+                        <div class="qiang-new-order">
+                            待配送订单数：
+                            <span id="order-daipeisong">12</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-card qiang-card">
+                    <div class="qiang-card-title">
+                        火灾预警系统状态
+                    </div>
+                    <div class="qiang-card-body">
+                        <div class="qiang-warning">
+                            <img id="img-yujing" src="../img/warning1.png" alt="">
+                            <div>
+                                <input type="checkbox" checked="" name="open" lay-skin="switch"  lay-text="开启|关闭" lay-filter="switch-warning" title="开关">
+                                <span id="div-yujing">系统运转正常</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--第三行 物联网设备数据 连接展示-->
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md4 layui-col-sm6">
+                <div class="layui-card qiang-card">
+                    <div class="qiang-card-title">
+                        大厅温湿度
+                    </div>
+                    <div class="qiang-card-body">
+                        <div class="qiang-wenshidu">
+                            <p>温度：26 摄氏度</p>
+                            <p>湿度：80 %</p>
+                        </div>
+                        <div >
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md4 layui-col-sm6">
+                <div class="layui-card qiang-card">
+                    <div class="qiang-card-title">
+                        餐厅照明
+                    </div>
+                    <div class="qiang-card-body">
+                        <div class="qiang-zhaoming">
+                            <table>
+                                <tr>
+                                    <td>大厅</td>
+                                    <td>侧厅</td>
+                                    <td>吧台</td>
+                                    <td>厨房</td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" checked="" name="dating" lay-skin="switch"  lay-text="开启|关闭" lay-filter="" title="开关"></td>
+                                    <td><input type="checkbox" checked="" name="ceting" lay-skin="switch"  lay-text="开启|关闭" lay-filter="" title="开关"></td>
+                                    <td><input type="checkbox" checked="" name="batai" lay-skin="switch"  lay-text="开启|关闭" lay-filter="" title="开关"></td>
+                                    <td><input type="checkbox" checked="" name="chufang" lay-skin="switch"  lay-text="开启|关闭" lay-filter="" title="开关"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</form>
+<script>
+    layui.use(['form', 'layer'], function () {
+        var form = layui.form
+            , layer = layui.layer;
+        //监听开关
+        form.on('switch(switch-warning)', function(data){
+            layer.msg('火灾预警系统：'+ (this.checked ? '开启' : '关闭'));
+            if (this.checked){
+                $("#img-yujing").prop("src","../img/warning1.png");
+                $("#div-yujing").text("系统运转正常");
+            }else {
+                $("#img-yujing").prop("src","../img/warning2.png");
+                $("#div-yujing").text("系统故障或已关闭，请及时检查");
+            }
+        });
+
+        //显示订单数量
+        //总的完成的订单数量
+        displayOrder(3,$("#order-yiwancheng"));
+        //新的订单
+        displayOrder(1,$("#order-yifukuan"));
+        //待配送
+        displayOrder(2,$("#order-daipeisong"));
+
+        //定时检查有无新订单，刷新数据
+        var timer = setInterval(function () {
+            //总的完成的订单数量
+            displayOrder(3,$("#order-yiwancheng"));
+            //新的订单
+            displayOrder(1,$("#order-yifukuan"));
+            //待配送
+            displayOrder(2,$("#order-daipeisong"));
+
+        },5000);
+
+        //查询订单数量，并改变界面显示
+        function displayOrder(status , $div) {
+            //发送请求查询订单数
+            $.get("../order/haveNewOrder",{"status":status},function (result) {
+                if (result.code == 100 ){
+                    $div.text(result.extend.count);
+                }else {
+                    console.log("查询新数据出错!");
+                }
+            });
+        }
+    });
+</script>
+<!--图表-->
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('echarts'));
+
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+            text: ''
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        // calculable : true,
+        legend: {
+            data: ['营业额（万元）']
+        },
+        xAxis: {
+            data: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
+        },
+        yAxis: {},
+        series: [{
+            name: '营业额（万元）',
+            type: 'bar',
+            data: [5.9, 20.6, 36.1, 10, 10.5, 20,6.8, 20, 36, 10.9, 14, 20]
+        }]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+</script>
 </body>
 </html>

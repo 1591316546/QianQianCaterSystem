@@ -43,6 +43,8 @@ public class UserServiceImpl implements UserService {
             //生成激活码
             String activeCode = UUID.randomUUID().toString() + new Date().getTime();
             user.setActiveCode(activeCode);
+
+            user.setActiveStatus("Y");//为了省去激活的步骤直接设置为是激活的状态
             //保存用户
             int i = userDAO.saveUser(user);
             if (i == 1) {
