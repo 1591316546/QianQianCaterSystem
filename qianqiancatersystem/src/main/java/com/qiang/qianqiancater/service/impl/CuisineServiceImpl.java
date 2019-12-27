@@ -240,4 +240,20 @@ public class CuisineServiceImpl implements CuisineService {
         }
     }
 
+    /**
+     * 获取菜品总数量
+     *
+     * @return
+     */
+    @Override
+    public int getCuisinesCount() {
+        long count = 0;
+        try {
+            count = cuisineDao.allCuisineCount();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return (int) count;
+    }
+
 }

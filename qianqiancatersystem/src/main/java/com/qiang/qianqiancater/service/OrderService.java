@@ -57,4 +57,10 @@ public interface OrderService {
      * @return
      */
     long haveNewOrder(int status);
+
+    /**
+     * 取得总收入
+     * @return
+     */
+    double getTotalIncome();
 }

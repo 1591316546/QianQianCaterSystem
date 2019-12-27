@@ -102,7 +102,7 @@
                         <span class="layui-badge layui-bg-blue">总</span>
                     </div>
                     <div class="qiang-card-body">
-                        <div class="qiang-card-num">
+                        <div id="count-all-cuisine" class="qiang-card-num">
                             99
                         </div>
                         <div>菜品总数</div>
@@ -117,7 +117,7 @@
                         <span class="layui-badge layui-bg-black">年</span>
                     </div>
                     <div class="qiang-card-body">
-                        <div class="qiang-card-num">
+                        <div id="tatal-income" class="qiang-card-num">
                             66666.66
                         </div>
                         <div>总营业额：<span>49426646.03</span><i class="layui-icon layui-inline layui-icon-dollar"></i>
@@ -132,7 +132,7 @@
                         <span class="layui-badge layui-bg-blue">总</span>
                     </div>
                     <div class="qiang-card-body">
-                        <div class="qiang-card-num">
+                        <div id="count-all-users" class="qiang-card-num">
                             6868
                         </div>
                         <div>用户总数</div>
@@ -237,16 +237,17 @@
                                     <td>厨房</td>
                                 </tr>
                                 <tr>
-                                    <td><input type="checkbox" checked="" name="dating" lay-skin="switch"  lay-text="开启|关闭" lay-filter="" title="开关"></td>
-                                    <td><input type="checkbox" checked="" name="ceting" lay-skin="switch"  lay-text="开启|关闭" lay-filter="" title="开关"></td>
-                                    <td><input type="checkbox" checked="" name="batai" lay-skin="switch"  lay-text="开启|关闭" lay-filter="" title="开关"></td>
-                                    <td><input type="checkbox" checked="" name="chufang" lay-skin="switch"  lay-text="开启|关闭" lay-filter="" title="开关"></td>
+                                    <td><input type="checkbox" checked="" name="dating" lay-skin="switch"  lay-text="开启|关闭" lay-filter="dating" title="开关"></td>
+                                    <td><input type="checkbox" checked="" name="ceting" lay-skin="switch"  lay-text="开启|关闭" lay-filter="ceting" title="开关"></td>
+                                    <td><input type="checkbox" checked="" name="batai" lay-skin="switch"  lay-text="开启|关闭" lay-filter="batai" title="开关"></td>
+                                    <td><input type="checkbox" checked="" name="chufang" lay-skin="switch"  lay-text="开启|关闭" lay-filter="chufang" title="开关"></td>
                                 </tr>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
     </div>
 </form>
 <script>
@@ -263,6 +264,19 @@
                 $("#img-yujing").prop("src","../img/warning2.png");
                 $("#div-yujing").text("系统故障或已关闭，请及时检查");
             }
+        });
+        //照明开关
+        form.on('switch(dating)',function (data) {
+            layer.msg('大厅的照明：'+ (this.checked ? '开启' : '关闭'));
+        });
+        form.on('switch(ceting)',function (data) {
+            layer.msg('侧厅的照明：'+ (this.checked ? '开启' : '关闭'));
+        });
+        form.on('switch(batai)',function (data) {
+            layer.msg('吧台的照明：'+ (this.checked ? '开启' : '关闭'));
+        });
+        form.on('switch(chufang)',function (data) {
+            layer.msg('厨房的照明：'+ (this.checked ? '开启' : '关闭'));
         });
 
         //显示订单数量
@@ -295,6 +309,21 @@
                 }
             });
         }
+
+        //总营业额
+        $.get("../order/getTotalIncome",function (result) {
+            $("#tatal-income").html(result.extend.totalIncome);
+        });
+
+        //总菜品数
+        $.get("../cuisine/getCuisinesCount",function (result) {
+            $("#count-all-cuisine").html(result.count);
+        });
+
+        //总用户数
+        $.get("../user/getUserCount",function (result) {
+            $("#count-all-users").html(result.count);
+        });
     });
 </script>
 <!--图表-->

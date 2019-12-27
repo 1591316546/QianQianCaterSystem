@@ -24,13 +24,17 @@ public class OrderServlet extends BaseServlet {
 
     CuisineService cuisineService = new CuisineServiceImpl();
     OrderService orderService = new OrderFormServiceImpl();
+
     /*
      * 添加到菜篮子
      */
     public void addToBasket(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //当前 session
+        //System.out.println("OrderServlet: addToBasket: 当前session:" + request.getSession());
+
         //后端检查登录状态
         User user = (User) request.getSession().getAttribute("user");
-        if (user == null){
+        if (user == null) {
             return;
         }
         //要放入菜篮子的菜品id
@@ -44,9 +48,9 @@ public class OrderServlet extends BaseServlet {
         //拿到菜篮子
         FoodBasket foodBasket = getFoodBasket(request.getSession());
         //添加到篮子
-        foodBasket.addToBasket(cuisine,count);
+        foodBasket.addToBasket(cuisine, count);
         //响应成功信息
-        responseMsg(Msg.success(),response);
+        responseMsg(Msg.success(), response);
     }
 
     /**
@@ -60,8 +64,8 @@ public class OrderServlet extends BaseServlet {
         //总金额
         Double totalMoney = foodBasket.getTotalMoney();
         //响应
-        Msg msg = Msg.success().add("foodItems",foodItems).add("totalMoney",totalMoney);
-        responseMsg(msg,response);
+        Msg msg = Msg.success().add("foodItems", foodItems).add("totalMoney", totalMoney);
+        responseMsg(msg, response);
     }
 
     /**
@@ -72,7 +76,7 @@ public class OrderServlet extends BaseServlet {
         Integer cid = Integer.parseInt(cidStr);
         //移出菜篮子
         getFoodBasket(request.getSession()).removeItemFromBasket(cid);
-        responseMsg(Msg.success(),response);
+        responseMsg(Msg.success(), response);
     }
 
     /**
@@ -80,7 +84,7 @@ public class OrderServlet extends BaseServlet {
      */
     public void clearFoodBasket(HttpServletRequest request, HttpServletResponse response) throws IOException {
         getFoodBasket(request.getSession()).clearBasket();
-        responseMsg(Msg.success(),response);
+        responseMsg(Msg.success(), response);
     }
 
     /**
@@ -89,11 +93,12 @@ public class OrderServlet extends BaseServlet {
     public void confirmOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //获取到用户
         User user = (User) request.getSession().getAttribute("user");
-        if (user == null){
+        if (user == null) {
             //未登录
-            responseMsg(Msg.fail(),response);
+            responseMsg(Msg.fail(), response);
             return;
         }
+        request.setCharacterEncoding("utf-8");
         //接收参数
         String name = request.getParameter("name");
         String address = request.getParameter("address");
@@ -114,7 +119,7 @@ public class OrderServlet extends BaseServlet {
         orderForm.setOrderTime(new Date());//时间
         orderForm.setUser(user);//下单者
         //遍历菜篮子里的每一项
-        for (FoodItem foodItem : foodBasket.getFoodItems().values()){
+        for (FoodItem foodItem : foodBasket.getFoodItems().values()) {
             OrderItem orderItem = new OrderItem();
             orderItem.setCuisine(foodItem.getCuisine());//菜品
             orderItem.setCount(foodItem.getCount());//数量
@@ -129,21 +134,22 @@ public class OrderServlet extends BaseServlet {
         //清空菜篮子
         foodBasket.clearBasket();
         //跳转到第三方的url；
-        String url= "http://127.0.0.1:8080/qianqiancater/jsp/the_third-party_payment.jsp?oid="+orderForm.getOid();
+        String url = "http://127.0.0.1:8080/qianqiancater/jsp/the_third-party_payment.jsp?oid=" + orderForm.getOid();
         //响应客户端
-        responseMsg(Msg.success().add("url",url),response);
+        responseMsg(Msg.success().add("url", url), response);
     }
 
     /**
-     * 显示某人订单数据 (用户部分)
+     * 显示当前登录者的订单数据 (用户部分)
      */
     public void getOrderFromList(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = (User) request.getSession().getAttribute("user");
-        if (user == null){
+        if (user == null) {
             //没有登录
-            responseMsg(Msg.fail(),response);
+            responseMsg(Msg.fail(), response);
             return;
         }
+        //接收参数
         String pageSizeStr = request.getParameter("pageSize");
         String currentPageStr = request.getParameter("currentPage");
         int pageSize = 1;
@@ -151,12 +157,13 @@ public class OrderServlet extends BaseServlet {
         try {
             pageSize = Integer.parseInt(pageSizeStr);
             currentPage = Integer.parseInt(currentPageStr);
-        } catch (NumberFormatException e) { }
+        } catch (NumberFormatException e) {
+        }
         //获取到封装好的订单列表
-        PageBean<OrderForm> orderFormPage = orderService.getOrderFormPageBean(user,pageSize,currentPage);
+        PageBean<OrderForm> orderFormPage = orderService.getOrderFormPageBean(user, pageSize, currentPage);
         //响应到客户端
-        Msg msg = Msg.success().add("page",orderFormPage);
-        responseMsg(msg,response);
+        Msg msg = Msg.success().add("page", orderFormPage);
+        responseMsg(msg, response);
     }
 
     /**
@@ -168,14 +175,15 @@ public class OrderServlet extends BaseServlet {
         if (b) {
             //修改成功
             responseMsg(Msg.success(), response);
-        }else {
+        } else {
             //失败
-            responseMsg(Msg.fail(),response);
+            responseMsg(Msg.fail(), response);
         }
     }
 
     /**
      * 获得某种状态的订单 （管理端）
+     *
      * @param request
      * @param response
      * @throws IOException
@@ -192,14 +200,14 @@ public class OrderServlet extends BaseServlet {
             currentPage = Integer.parseInt(curr);
             pageSize = Integer.parseInt(limit);
         } catch (NumberFormatException e) {
-            responseMsg(DataMsg.fail("参数异常"),response);
+            responseMsg(DataMsg.fail("参数异常"), response);
             return;
         }
 
         PageBean<OrderForm> orderPageBean = orderService.getOrderFormOfStatusPageBean(status, pageSize, currentPage);
-        if (orderPageBean.getTotalRecords() <= 0){
-            responseMsg(DataMsg.fail("当前没有订单"),response);
-        }else {
+        if (orderPageBean.getTotalRecords() <= 0) {
+            responseMsg(DataMsg.fail("当前没有订单"), response);
+        } else {
             responseMsg(DataMsg.success(orderPageBean.getTotalRecords(), orderPageBean.getDataList()), response);
         }
     }
@@ -209,14 +217,14 @@ public class OrderServlet extends BaseServlet {
      */
     public void acceptOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String[] oids = request.getParameterValues("oid");
-        boolean flag= true;
-        for (String oid :oids){
+        boolean flag = true;
+        for (String oid : oids) {
             flag = orderService.acceptOrder(oid);
         }
         if (flag) {
             responseMsg(Msg.success(), response);
-        }else {
-            responseMsg(Msg.fail(),response);
+        } else {
+            responseMsg(Msg.fail(), response);
         }
     }
 
@@ -225,14 +233,14 @@ public class OrderServlet extends BaseServlet {
      */
     public void rejectOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String[] oids = request.getParameterValues("oid");
-        boolean flag= true;
-        for (String oid :oids){
+        boolean flag = true;
+        for (String oid : oids) {
             flag = orderService.rejectOrder(oid);
         }
         if (flag) {
             responseMsg(Msg.success(), response);
-        }else {
-            responseMsg(Msg.fail(),response);
+        } else {
+            responseMsg(Msg.fail(), response);
         }
     }
 
@@ -241,14 +249,14 @@ public class OrderServlet extends BaseServlet {
      */
     public void finshOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String[] oids = request.getParameterValues("oid");
-        boolean flag= true;
-        for (String oid :oids){
+        boolean flag = true;
+        for (String oid : oids) {
             flag = orderService.orderFinish(oid);
         }
         if (flag) {
             responseMsg(Msg.success(), response);
-        }else {
-            responseMsg(Msg.fail(),response);
+        } else {
+            responseMsg(Msg.fail(), response);
         }
     }
 
@@ -276,6 +284,7 @@ public class OrderServlet extends BaseServlet {
 
     /**
      * 通过记录数的改变获知有无新订单
+     *
      * @param request
      * @param response
      * @throws IOException
@@ -291,22 +300,33 @@ public class OrderServlet extends BaseServlet {
         }
         int count = (int) orderService.haveNewOrder(status);
 
-        responseMsg(Msg.success().add("count",count),response);
+        responseMsg(Msg.success().add("count", count), response);
+    }
 
+    /**
+     * 取得总收益的数据
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    public void getTotalIncome(HttpServletRequest request, HttpServletResponse response) throws IOException {
+       double totalIncome =  orderService.getTotalIncome();
+       responseMsg(Msg.success().add("totalIncome",totalIncome),response);
     }
 
         /**
          * 获取session中的菜篮子,没有就new一个放进去
+         *
          * @param session
          * @return FoodBasket
          */
-    protected FoodBasket getFoodBasket(HttpSession session){
+    protected FoodBasket getFoodBasket(HttpSession session) {
         //从session中获取菜篮子
         FoodBasket foodBasket = (FoodBasket) session.getAttribute("FoodBasket");
-        if (foodBasket == null){
+        if (foodBasket == null) {
             //如果没有就创建一个，加入session
             foodBasket = new FoodBasket();
-            session.setAttribute("FoodBasket",foodBasket);
+            session.setAttribute("FoodBasket", foodBasket);
         }
         return foodBasket;
     }

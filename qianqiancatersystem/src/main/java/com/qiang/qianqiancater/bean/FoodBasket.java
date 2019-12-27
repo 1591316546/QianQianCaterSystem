@@ -1,5 +1,6 @@
 package com.qiang.qianqiancater.bean;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +66,8 @@ public class FoodBasket {
     }
 
     public Double getTotalMoney() {
-        return totalMoney;
+        BigDecimal b = new BigDecimal(totalMoney);
+        return b.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     public void setTotalMoney(Double totalMoney) {

@@ -50,6 +50,8 @@ public class CheckCodeServlet extends HttpServlet {
         }
         //将验证码存入session
         request.getSession().setAttribute("check_code_session",sb.toString());
+        //当前session
+        //System.out.println("CheckCodeServlet ：doGet ：当前session --->" + request.getSession());
 
         //画干扰线
         g.setColor(Color.green);

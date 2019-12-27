@@ -82,4 +82,10 @@ public interface CuisineService {
      * @param cids
      */
     boolean delete(String[] cids) ;
+
+    /**
+     * 获取菜品总数量
+     * @return
+     */
+    int getCuisinesCount();
 }

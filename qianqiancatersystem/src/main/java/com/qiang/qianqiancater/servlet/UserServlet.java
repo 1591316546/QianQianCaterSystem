@@ -104,6 +104,8 @@ public class UserServlet extends BaseServlet {
         String password = request.getParameter("password");
         String checkCode = request.getParameter("checkCode");
         String check_code_session = (String) request.getSession().getAttribute("check_code_session");
+        //当前session
+        //System.out.println("UserServlet ：login ：当前session --->" + request.getSession());
         //使验证码失效
         request.getSession().removeAttribute("check_code_session");
         if (check_code_session == null || !check_code_session.equalsIgnoreCase(checkCode)) {
@@ -195,6 +197,17 @@ public class UserServlet extends BaseServlet {
         }else {
             responseMsg(DataMsg.fail("修改失败！"),response);
         }
+    }
+
+    /**
+     * 取得所有用户数量 （后台）
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    public void getUserCount(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        int count = userService.getUserCount();
+        responseMsg(DataMsg.success(count,null),response);
     }
 
 }

@@ -90,4 +90,10 @@ public interface OrderFormDao {
      * @return
      */
     Long countNewOrderStatus(int status, long timestamp) throws SQLException;
+
+    /**
+     * 总的订单收益，完成的订单总额
+     * @return
+     */
+    double allFinishOrderTotalMoney() throws SQLException;
 }

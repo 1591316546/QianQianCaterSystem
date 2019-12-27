@@ -228,7 +228,7 @@ public class OrderFormDaoImpl implements OrderFormDao {
         String sql = "SELECT `oid`,`totalMoney`,`status`,`name`,`address`,`phone`,`remark`,`orderTime`,`uid`,`payTime`,`finishTime`\n" +
                 "FROM t_orderform \n" +
                 "WHERE `status`=?\n" +
-                "ORDER BY `payTime`\n" +
+                "ORDER BY `payTime` DESC\n" +
                 "LIMIT ?,?";
         List<OrderForm> orderFormList = queryRunnerG.query(sql, new BeanListHandler<OrderForm>(OrderForm.class), status, (currentPage - 1) * pageSize, pageSize);
         //填充订单项和用户信息
@@ -263,6 +263,18 @@ public class OrderFormDaoImpl implements OrderFormDao {
         String sql = "SELECT COUNT(*) FROM t_orderform WHERE `status` = ? AND `payTime` > ?";
         Long count = queryRunnerG.query(sql, new ScalarHandler<Long>(), status, dateFormat.format(new Date(timestamp)));
         return count;
+    }
+
+    /**
+     * 总的订单收益，完成的订单总额
+     *
+     * @return
+     */
+    @Override
+    public double allFinishOrderTotalMoney() throws SQLException {
+        String sql = "SELECT SUM(totalMoney) FROM t_orderform WHERE `status`=3";
+        Double query = queryRunnerG.query(sql, new ScalarHandler<Double>());
+        return query;
     }
 
     /**

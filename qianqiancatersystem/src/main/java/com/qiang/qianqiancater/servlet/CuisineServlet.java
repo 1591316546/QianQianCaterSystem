@@ -1,6 +1,7 @@
 package com.qiang.qianqiancater.servlet;
 
 import com.qiang.qianqiancater.bean.Cuisine;
+import com.qiang.qianqiancater.bean.DataMsg;
 import com.qiang.qianqiancater.bean.PageBean;
 import com.qiang.qianqiancater.service.CuisineService;
 import com.qiang.qianqiancater.service.impl.CuisineServiceImpl;
@@ -298,5 +299,15 @@ public class CuisineServlet extends BaseServlet {
         }
     }
 
+    /**
+     * 所有菜品总数的接口（后台）
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    public void getCuisinesCount(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        int count = cuisineService.getCuisinesCount();
+        responseMsg(DataMsg.success(count,null),response);
+    }
 
 }

@@ -1,5 +1,8 @@
 package com.qiang.qianqiancater.bean;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+
 /**
  * @author QIANG
  */
@@ -38,7 +41,10 @@ public class FoodItem {
 
     // 返回的小计金额是单价乘以数量
     public double getSubtotal() {
-        return this.cuisine.getPrice() * this.count;
+        double subtotalTemp = this.cuisine.getPrice() * this.count;
+
+        BigDecimal   b   =   new   BigDecimal(subtotalTemp);
+        return b.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     public void setSubtotal(double subtotal) {

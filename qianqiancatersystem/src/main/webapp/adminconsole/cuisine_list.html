@@ -198,9 +198,9 @@
                 //每一个菜品对象
                 var cuisine = cuisineArray[i];
                 //上架状态
-                var putawayStatus = "上架";
+                var putawayStatus = "<button class='layui-btn layui-btn-xs layui-btn-normal'>上架</button>";
                 if (cuisine.putaway != "Y") {
-                    putawayStatus = "已下架";
+                    putawayStatus = "<button class='layui-btn layui-btn-xs layui-btn-warm'>已下架</button>";
                 }
 
                 //入库时间

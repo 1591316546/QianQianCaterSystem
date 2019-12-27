@@ -53,12 +53,14 @@ public class UserServiceImpl implements UserService {
                     String addr = InetAddress.getLocalHost().getHostAddress();//获得本机IP
                     //拼接激活url
                     String url = "http://" + addr + ":8080/qianqiancater/user/activeAccount?activeCode=" + activeCode;
+                    /*
                     MailUtils.sendEmail("千乾餐饮新用户注册激活",
                             "您已经注册成功，<a href='" + url + "'>点击此处激活账户</a>。" +
                                     "如果不能自动跳转，请手动复制以下地址到浏览器地址栏激活。<br/>" +
                                     url + "<br/>" +
                                     "如果不是您本人注册，请忽略该邮件。请勿回复。",
                             user.getEmail(), null);
+                     */
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 }
@@ -142,5 +144,21 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 获取用户总数
+     *
+     * @return
+     */
+    @Override
+    public int getUserCount() {
+        long l = 0;
+        try {
+            l = userDAO.countAllUser();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return (int) l;
     }
 }

@@ -54,4 +54,10 @@ public interface UserService {
      * 根据用户id设置用户账户的状态
      */
     boolean setActiveStatus(int id, String status);
+
+    /**
+     * 获取用户总数
+     * @return
+     */
+    int getUserCount();
 }

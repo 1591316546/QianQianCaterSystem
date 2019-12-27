@@ -251,4 +251,20 @@ public class OrderFormServiceImpl implements OrderService {
         }
         return count;
     }
+
+    /**
+     * 取得总收入
+     *
+     * @return
+     */
+    @Override
+    public double getTotalIncome() {
+        double totalIncome = 0;
+        try {
+            totalIncome = orderFormDao.allFinishOrderTotalMoney();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return totalIncome;
+    }
 }
